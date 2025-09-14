@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bets      Bet[]
+  games     Game[]   @relation("GameOwner")
+  questions Question[] @relation("QuestionCreator")
+}
+
+model Game {
+  id                String    @id @default(cuid())
+  name              String
+  createdBy         String
+  status            String    @default("ACTIVE") // ACTIVE, RESULTS_PUBLISHED
+  actualResults     Json?     // Store actual baby data: weight, length, birth date
+  publishedQuestions Json?    // Array of questions that have been published
+  settings          Json?
+  deletedAt         DateTime? // Soft delete timestamp
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  bets              Bet[]
+  questions         Question[] // Custom questions for this game
+  owner             User      @relation("GameOwner", fields: [createdBy], references: [id])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  text        String   // The question text
+  type        String   @default("NUMBER") // NUMBER, DATE, TIME, SELECT, COLORPICKER
+  options     Json?    // For SELECT type questions, store possible options
+  placeholder String?  // Placeholder text for inputs
+  isDefault   Boolean  @default(false) // Whether this is a default question
+  order       Int      // Display order
+  gameId      String
+  createdBy   String   // User who created this custom question
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  game        Game     @relation(fields: [gameId], references: [id])
+  creator     User     @relation("QuestionCreator", fields: [createdBy], references: [id])
+
+  @@unique([gameId, text]) // Prevent duplicate questions in the same game
+}
+
+model Bet {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  gameId    String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  game      Game     @relation(fields: [gameId], references: [id])
+
+  @@unique([gameId, userId, question])
+}
