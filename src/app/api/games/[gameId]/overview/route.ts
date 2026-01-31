@@ -85,7 +85,7 @@ export async function GET(
             publishedQuestions = typeof gameWithFields.publishedQuestions === 'string' 
               ? JSON.parse(gameWithFields.publishedQuestions)
               : gameWithFields.publishedQuestions as string[];
-          } catch (_error) {
+          } catch {
             publishedQuestions = Array.isArray(gameWithFields.publishedQuestions) 
               ? gameWithFields.publishedQuestions 
               : [];

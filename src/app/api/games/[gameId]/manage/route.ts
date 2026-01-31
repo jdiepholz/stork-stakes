@@ -82,7 +82,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
         publishedQuestions = typeof gameWithFields.publishedQuestions === 'string' 
           ? JSON.parse(gameWithFields.publishedQuestions)
           : gameWithFields.publishedQuestions;
-      } catch (_error) {
+      } catch {
         publishedQuestions = Array.isArray(gameWithFields.publishedQuestions) 
           ? gameWithFields.publishedQuestions 
           : [];

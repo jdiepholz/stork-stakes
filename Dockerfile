@@ -2,6 +2,7 @@
 
 # 1. Install dependencies
 FROM node:22-alpine AS deps
+RUN npm install -g npm@latest
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
@@ -9,6 +10,7 @@ RUN npm install
 
 # 2. Build the application
 FROM node:22-alpine AS builder
+RUN npm install -g npm@latest
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -17,6 +19,7 @@ RUN npm run build
 
 # 3. Production image
 FROM node:22-alpine AS runner
+RUN npm install -g npm@latest
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 

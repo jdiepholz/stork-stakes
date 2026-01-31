@@ -49,7 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
         publishedQuestions = typeof gameWithFields.publishedQuestions === 'string' 
           ? JSON.parse(gameWithFields.publishedQuestions)
           : gameWithFields.publishedQuestions as string[];
-      } catch (_error) {
+      } catch {
         publishedQuestions = Array.isArray(gameWithFields.publishedQuestions) 
           ? gameWithFields.publishedQuestions 
           : [];

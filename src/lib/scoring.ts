@@ -175,7 +175,7 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
         const differenceInDays = Math.round(differenceInMs / (1000 * 60 * 60 * 24));
         
         return { value: differenceInDays, isNumerical: true };
-      } catch (_error) {
+      } catch {
         return { value: 0, isNumerical: false };
       }
 
@@ -193,7 +193,7 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
         
         const difference = Math.abs(actualTotalMinutes - predictedTotalMinutes);
         return { value: difference, isNumerical: true };
-      } catch (_error) {
+      } catch {
         return { value: 0, isNumerical: false };
       }
 
@@ -222,7 +222,7 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
         const colorDistance = Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
         
         return { value: colorDistance, isNumerical: true };
-      } catch (_error) {
+      } catch {
         return { value: 0, isNumerical: false };
       }
 

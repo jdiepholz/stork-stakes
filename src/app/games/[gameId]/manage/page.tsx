@@ -148,6 +148,7 @@ export default function ManageGamePage() {
   //   }
   // };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSaveQuestion = async (_questionId: string) => {
     if (!user || !gameData) return;
 
@@ -238,7 +239,7 @@ export default function ManageGamePage() {
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || 'Unknown error';
-        } catch (_jsonError) {
+        } catch {
           // If response is not JSON, use status text
           errorMessage = response.statusText || 'Unknown error';
         }

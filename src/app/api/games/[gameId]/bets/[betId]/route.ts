@@ -40,7 +40,7 @@ export async function PATCH(
         publishedArray = typeof publishedQuestions === 'string' 
           ? JSON.parse(publishedQuestions)
           : publishedQuestions as string[];
-      } catch (_error) {
+      } catch {
         publishedArray = Array.isArray(publishedQuestions) ? publishedQuestions : [];
       }
       
