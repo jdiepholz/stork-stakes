@@ -100,7 +100,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${baseClassName}`}
+              className={`w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${baseClassName}`}
             >
               <option value="">Select...</option>
               {bet.questionOptions.map((option: string, index: number) => (
@@ -118,7 +118,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${baseClassName}`}
+              className={`w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${baseClassName}`}
             >
               <option value="">Select...</option>
               <option value="Boy">Boy</option>
@@ -134,7 +134,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${baseClassName}`}
+              className={`w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${baseClassName}`}
             >
               <option value="">Select...</option>
             </select>
@@ -150,7 +150,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value || '#000000'}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-16 h-10 p-1 border border-gray-300 rounded-md cursor-pointer ${baseClassName}`}
+              className={`w-16 h-10 p-1 border border-input rounded-md cursor-pointer ${baseClassName}`}
             />
           </div>
         );

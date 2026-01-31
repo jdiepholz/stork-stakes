@@ -96,7 +96,7 @@ export default function EditQuestionsPage() {
       <div className="w-full max-w-4xl space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Edit Game Questions</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Modify the questions for &quot;{gameData.name}&quot;. You can reorder, delete, or add custom questions.
           </p>
         </div>
