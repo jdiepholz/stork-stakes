@@ -2,15 +2,12 @@
 
 # 1. Install dependencies
 FROM node:latest AS deps
-RUN npm install -g npm@latest
 WORKDIR /app
 COPY package.json package-lock.json ./
-COPY prisma ./prisma
 RUN npm install
 
 # 2. Build the application
 FROM node:latest AS builder
-RUN npm install -g npm@latest
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -19,7 +16,6 @@ RUN npm run build
 
 # 3. Production image
 FROM node:latest AS runner
-RUN npm install -g npm@latest
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -30,7 +26,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
@@ -38,4 +33,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+CMD ["npm", "run", "start"]
