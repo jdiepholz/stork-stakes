@@ -13,6 +13,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
   }
 
   try {
+    // Verify the user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found. Please log in again.' }, { status: 401 });
+    }
+
     // Get the game and verify the user is the creator (excluding soft-deleted)
     const game = await prisma.game.findFirst({
       where: { 
@@ -36,7 +45,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
     // Get all bets for this game with user information
     const bets = await prisma.bet.findMany({
       where: { gameId },
-      include: {
+      select: {
+        id: true,
+        question: true,
+        answer: true,
+        userId: true,
+        username: true,
         user: {
           select: {
             id: true,
