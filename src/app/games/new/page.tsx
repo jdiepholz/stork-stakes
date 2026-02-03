@@ -57,7 +57,17 @@ export default function NewGamePage() {
         setGameId(game.id);
         setStep('questions');
       } else {
-        toast.error('Failed to create game.');
+        const errorData = await gameResponse.json();
+        if (gameResponse.status === 401) {
+          // Invalid user, clear localStorage and redirect to login
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userName');
+          toast.error('Your session has expired. Please log in again.');
+          router.push('/auth?redirect=/games/new');
+        } else {
+          toast.error(errorData.error || 'Failed to create game.');
+        }
       }
     } catch (error) {
       console.error('Error creating game:', error);

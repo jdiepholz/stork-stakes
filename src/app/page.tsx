@@ -15,6 +15,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      {/* Navigation Bar */}
+      <nav className="container mx-auto px-4 py-4">
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/auth?mode=login')}
+          >
+            Sign In
+          </Button>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="flex flex-col items-center text-center space-y-8 max-w-4xl mx-auto">

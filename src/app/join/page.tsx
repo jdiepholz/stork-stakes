@@ -157,7 +157,17 @@ export default function JoinPage() {
           </div>
 
           {/* Back to Home */}
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 space-y-4">
+            <div className="text-sm text-muted-foreground">
+              Already have an account?{' '}
+              <Button
+                variant="link"
+                className="p-0 h-auto font-semibold"
+                onClick={() => router.push('/auth?mode=login')}
+              >
+                Sign In
+              </Button>
+            </div>
             <Button
               variant="ghost"
               onClick={() => router.push('/')}

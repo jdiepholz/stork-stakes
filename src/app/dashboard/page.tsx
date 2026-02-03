@@ -40,7 +40,17 @@ export default function DashboardPage() {
         'Authorization': userId,
       },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401 || res.status === 404) {
+          // Invalid user, clear localStorage and redirect to login
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userName');
+          router.push('/auth');
+          return [];
+        }
+        return res.json();
+      })
       .then(setMyGames)
       .catch(console.error);
   }, [router]);
