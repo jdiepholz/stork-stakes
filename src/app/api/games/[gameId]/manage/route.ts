@@ -50,22 +50,31 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
     // Group bets by user (excluding the game creator)
     const participantMap = new Map();
     
-    bets.forEach((bet: { userId: string; question: string; answer: string | null; user: { email: string; name: string | null } }) => {
-      // Skip bets from the game creator
+    bets.forEach((bet: { 
+      userId: string | null; 
+      username: string | null; 
+      question: string; 
+      answer: string | null; 
+      user: { email: string; name: string | null; id: string } | null 
+    }) => {
+      // Skip bets from the game creator (only registered users can be creators)
       if (bet.userId === game.createdBy) {
         return;
       }
       
-      if (!participantMap.has(bet.userId)) {
-        participantMap.set(bet.userId, {
-          userId: bet.userId,
-          userEmail: bet.user.email,
-          userName: bet.user.name,
+      // Create a unique key for each participant
+      const participantKey = bet.userId || `anonymous_${bet.username}`;
+      
+      if (!participantMap.has(participantKey)) {
+        participantMap.set(participantKey, {
+          userId: bet.userId || participantKey,
+          userEmail: bet.user?.email || bet.username || 'Anonymous',
+          userName: bet.user?.name || bet.username,
           predictions: [],
         });
       }
       
-      participantMap.get(bet.userId).predictions.push({
+      participantMap.get(participantKey).predictions.push({
         question: bet.question,
         answer: bet.answer,
       });

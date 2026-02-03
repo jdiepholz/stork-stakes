@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
 model User {
@@ -61,9 +61,11 @@ model Bet {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   gameId    String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  userId    String?  // Optional for anonymous users
+  username  String?  // For anonymous participants
+  user      User?    @relation(fields: [userId], references: [id])
   game      Game     @relation(fields: [gameId], references: [id])
 
-  @@unique([gameId, userId, question])
+  @@unique([gameId, userId, question], name: "unique_user_bet")
+  @@index([gameId, username, question], name: "idx_anonymous_bet")
 }

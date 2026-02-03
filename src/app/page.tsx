@@ -5,26 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useEffect, useState } from 'react';
 
 export default function Home() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Check if user is authenticated
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      setIsAuthenticated(true);
-    }
-  }, []);
 
   const handleGetStarted = () => {
-    if (isAuthenticated) {
-      router.push('/dashboard');
-    } else {
-      router.push('/auth');
-    }
+    router.push('/join');
   };
 
   return (
@@ -49,7 +35,7 @@ export default function Home() {
             size="lg" 
             className="text-lg px-8 py-6 h-auto font-semibold shadow-lg hover:shadow-xl transition-all"
           >
-            {isAuthenticated ? 'Go to Dashboard' : 'Get Started Free'} →
+            Get Started →
           </Button>
         </div>
       </section>
@@ -296,7 +282,7 @@ export default function Home() {
               size="lg" 
               className="text-lg px-12 py-6 h-auto font-semibold shadow-lg hover:shadow-xl transition-all"
             >
-              {isAuthenticated ? 'Go to Dashboard' : 'Create Your First Game'} →
+              Get Started →
             </Button>
             <p className="text-sm text-muted-foreground">
               No credit card required • Free forever • Set up in 60 seconds

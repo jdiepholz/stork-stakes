@@ -8,19 +8,20 @@ export async function PATCH(
   { params }: { params: Promise<{ gameId: string; betId: string }> }
 ) {
   const { betId } = await params;
-  const { answer, userId } = await req.json();
+  const { answer, userId, username } = await req.json();
 
-  if (!answer || !userId) {
-    return NextResponse.json({ error: 'Missing answer or userId' }, { status: 400 });
+  if (!answer || (!userId && !username)) {
+    return NextResponse.json({ error: 'Missing answer or user identifier' }, { status: 400 });
   }
 
   try {
-    // Check if this bet belongs to the current user for this game
+    // Check if this bet belongs to the current user/username for this game
+    const whereClause = userId 
+      ? { id: betId, userId: userId }
+      : { id: betId, username: username };
+
     const existingBet = await prisma.bet.findFirst({
-      where: {
-        id: betId,
-        userId: userId,
-      },
+      where: whereClause,
       include: {
         game: true,
       },

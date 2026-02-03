@@ -29,6 +29,9 @@ export default function GamePage() {
   const router = useRouter();
   const gameId = params.gameId as string;
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [username, setUsername] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -38,24 +41,40 @@ export default function GamePage() {
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
     
-    if (!userId || !userEmail) {
-      router.push(`/auth?redirect=/games/${gameId}`);
-      return;
+    if (userId && userEmail) {
+      setUser({ id: userId, email: userEmail });
+      setIsAnonymous(false);
+    } else {
+      // Anonymous user - check if they have a saved username for this game
+      const savedUsername = localStorage.getItem(`game_${gameId}_username`);
+      if (savedUsername) {
+        setUsername(savedUsername);
+        setIsAnonymous(true);
+      } else {
+        // Show name input for new anonymous user
+        setShowNameInput(true);
+        setIsAnonymous(true);
+      }
+      setLoading(false);
     }
-
-    setUser({ id: userId, email: userEmail });
-  }, [router, gameId]);
+  }, [gameId]);
 
   useEffect(() => {
-    if (gameId && user) {
+    if (gameId && (user || (isAnonymous && username))) {
       // Fetch or create bets for this user in this game
+      const requestBody = user 
+        ? { userId: user.id }
+        : { username: username };
+
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (user) {
+        headers['Authorization'] = user.id;
+      }
+
       fetch(`/api/games/${gameId}/user-bets`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': user.id,
-        },
-        body: JSON.stringify({ userId: user.id }),
+        headers,
+        body: JSON.stringify(requestBody),
       })
         .then((res) => {
           if (!res.ok) {
@@ -73,7 +92,7 @@ export default function GamePage() {
           
           if (data.error) {
             toast.error('Game not found or no longer available.');
-            router.push('/dashboard');
+            router.push('/join');
             return;
           }
           
@@ -94,11 +113,11 @@ export default function GamePage() {
         .catch((error) => {
           console.error('Error fetching bets:', error);
           toast.error('Error loading game. Please try again.');
-          router.push('/dashboard');
+          router.push('/join');
           setLoading(false);
         });
     }
-  }, [gameId, user, router]);
+  }, [gameId, user, username, isAnonymous, router]);
 
   const handleAnswerChange = (betId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [betId]: value }));
@@ -121,17 +140,21 @@ export default function GamePage() {
   // };
 
   const handleSaveAnswers = async () => {
-    if (!user) return;
+    if (!user && !username) return;
 
     try {
       // Update each bet with the user's answer
       for (const betId in answers) {
         const answer = answers[betId];
         if (answer) {
+          const requestBody = user 
+            ? { answer, userId: user.id }
+            : { answer, username: username };
+
           await fetch(`/api/games/${gameId}/bets/${betId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ answer, userId: user.id }),
+            body: JSON.stringify(requestBody),
           });
         }
       }
@@ -154,7 +177,57 @@ export default function GamePage() {
     );
   }
 
-  if (!user || !gameData) {
+  // Show name input for anonymous users
+  if (showNameInput && isAnonymous) {
+    const handleNameSubmit = () => {
+      if (username.trim()) {
+        localStorage.setItem(`game_${gameId}_username`, username.trim());
+        setShowNameInput(false);
+      } else {
+        toast.error('Please enter your name');
+      }
+    };
+
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-24">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Welcome to the Game!</CardTitle>
+            <p className="text-sm text-gray-600">Enter your name to participate</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="username" className="text-sm font-medium">
+                Your Name
+              </label>
+              <input
+                id="username"
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="Enter your name..."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleNameSubmit();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            <Button onClick={handleNameSubmit} className="w-full">
+              Continue →
+            </Button>
+            <p className="text-xs text-gray-500 text-center">
+              No account required! Your name will be used to identify your predictions.
+            </p>
+          </CardContent>
+        </Card>
+      </main>
+    );
+  }
+
+  if ((!user && !username) || !gameData) {
     return null;
   }
 
@@ -220,6 +293,31 @@ export default function GamePage() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <div className="w-full max-w-2xl space-y-6">
+        {/* User identification banner */}
+        {isAnonymous && username && (
+          <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200">
+            <CardContent className="py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Playing as:</span>
+                  <span className="font-bold">{username}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    localStorage.removeItem(`game_${gameId}_username`);
+                    setUsername('');
+                    setShowNameInput(true);
+                  }}
+                >
+                  Change Name
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Make Your Predictions!</h1>
           <div className="space-x-2">
@@ -229,12 +327,14 @@ export default function GamePage() {
             >
               View Overview
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => router.push('/dashboard')}
-            >
-              Dashboard
-            </Button>
+            {user && (
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/dashboard')}
+              >
+                Dashboard
+              </Button>
+            )}
           </div>
         </div>
 

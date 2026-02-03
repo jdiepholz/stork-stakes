@@ -32,6 +32,7 @@ export default function GameOverviewPage() {
   const router = useRouter();
   const gameId = params.gameId as string;
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [gameData, setGameData] = useState<GameOverview | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,26 +41,30 @@ export default function GameOverviewPage() {
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
     
-    if (!userId || !userEmail) {
-      router.push(`/auth?redirect=/games/${gameId}/overview`);
-      return;
+    if (userId && userEmail) {
+      setUser({ id: userId, email: userEmail });
+      setIsAnonymous(false);
+    } else {
+      // Anonymous user can still view overview
+      setIsAnonymous(true);
     }
-
-    setUser({ id: userId, email: userEmail });
-  }, [router, gameId]);
+  }, [gameId]);
 
   useEffect(() => {
-    if (gameId && user) {
+    if (gameId) {
+      const headers: HeadersInit = {};
+      if (user) {
+        headers['Authorization'] = user.id;
+      }
+
       fetch(`/api/games/${gameId}/overview`, {
-        headers: {
-          'Authorization': user.id,
-        },
+        headers,
       })
         .then((res) => {
           if (!res.ok) {
             if (res.status === 404) {
               toast.error('Game not found or no longer available.');
-              router.push('/dashboard');
+              router.push('/join');
               return;
             }
             throw new Error(`HTTP error! status: ${res.status}`);
@@ -71,14 +76,14 @@ export default function GameOverviewPage() {
             setGameData(data);
           } else {
             toast.error('Game not found or no longer available.');
-            router.push('/dashboard');
+            router.push('/join');
           }
           setLoading(false);
         })
         .catch((error) => {
           console.error('Error fetching game overview:', error);
           toast.error('Error loading game. Please try again.');
-          router.push('/dashboard');
+          router.push('/join');
           setLoading(false);
         });
     }
@@ -98,11 +103,11 @@ export default function GameOverviewPage() {
     );
   }
 
-  if (!user || !gameData || gameData.error) {
+  if (!gameData || gameData.error) {
     return null;
   }
 
-  const isCreator = user.id === gameData.createdBy;
+  const isCreator = user && user.id === gameData.createdBy;
   const resultsPublished = gameData.status === 'RESULTS_PUBLISHED';
   const hasPublishedQuestions = gameData.publishedQuestions && gameData.publishedQuestions.length > 0;
   const canSeeResults = isCreator || resultsPublished || hasPublishedQuestions;
@@ -130,14 +135,16 @@ export default function GameOverviewPage() {
             <Button onClick={() => router.push(`/games/${gameId}`)}>
               My Predictions
             </Button>
-            {user.id === gameData.createdBy && (
+            {isCreator && (
               <Button onClick={() => router.push(`/games/${gameId}/manage`)}>
                 Manage Game
               </Button>
             )}
-            <Button variant="outline" onClick={() => router.push('/dashboard')}>
-              Back to Dashboard
-            </Button>
+            {user && (
+              <Button variant="outline" onClick={() => router.push('/dashboard')}>
+                Back to Dashboard
+              </Button>
+            )}
           </div>
         </div>
 
@@ -176,7 +183,7 @@ export default function GameOverviewPage() {
                         <div>
                           <div className="font-medium">
                             {participant.userName || participant.userEmail}
-                            {participant.userId === user.id && ' (You)'}
+                            {user && participant.userId === user.id && ' (You)'}
                           </div>
                           <div className="text-sm text-gray-500">
                             {numericalQuestions.length} numerical prediction{numericalQuestions.length !== 1 ? 's' : ''}
@@ -242,7 +249,7 @@ export default function GameOverviewPage() {
                       <tr key={participant.userId} className="border-b">
                         <td className="p-4 font-medium">
                           {participant.userName || participant.userEmail}
-                          {participant.userId === user.id && ' (You)'}
+                          {user && participant.userId === user.id && ' (You)'}
                         </td>
                         {gameData.questions.map((question, qIndex) => {
                           const prediction = participant.predictions.find(

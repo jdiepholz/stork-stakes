@@ -11,7 +11,8 @@ interface Bet {
   createdAt: Date;
   updatedAt: Date;
   gameId: string;
-  userId: string;
+  userId: string | null;
+  username: string | null;
 }
 
 interface BetWithQuestionInfo extends Bet {
@@ -22,10 +23,10 @@ interface BetWithQuestionInfo extends Bet {
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = await params;
-  const { userId } = await req.json();
+  const { userId, username } = await req.json();
 
-  if (!userId) {
-    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+  if (!userId && !username) {
+    return NextResponse.json({ error: 'Missing userId or username' }, { status: 400 });
   }
 
   try {
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     }
 
     // If user is the creator, they don't need to make predictions
-    if (game.createdBy === userId) {
+    if (userId && game.createdBy === userId) {
       return NextResponse.json({ isCreator: true, bets: [], publishedQuestions });
     }
 
@@ -65,11 +66,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     const questions: Question[] = await getAllQuestionsForGame(gameId);
 
     // Check if user already has bets for this game
+    const whereClause = userId 
+      ? { gameId, userId }
+      : { gameId, username };
+
     const existingBets: Bet[] = await prisma.bet.findMany({
-      where: { 
-        gameId,
-        userId,
-      },
+      where: whereClause,
     });
 
     if (existingBets.length > 0) {
@@ -87,16 +89,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     }
 
     // Create bets for all questions in the game
+    const createData = userId 
+      ? questions.map((question: Question) => ({
+          question: question.text,
+          gameId,
+          userId,
+        }))
+      : questions.map((question: Question) => ({
+          question: question.text,
+          gameId,
+          username,
+        }));
+
     const bets: Bet[] = await Promise.all(
-      questions.map((question: Question) =>
-        prisma.bet.create({
-          data: {
-            question: question.text,
-            gameId,
-            userId,
-          },
-        })
-      )
+      createData.map((data) => prisma.bet.create({ data }))
     );
 
     // Add question type info to the bets
