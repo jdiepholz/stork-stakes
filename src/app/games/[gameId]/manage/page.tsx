@@ -458,7 +458,7 @@ export default function ManageGamePage() {
                   const hasActualResult = actualResults[question.id] && actualResults[question.id].trim() !== '';
                   
                   return (
-                    <div key={question.id} className={`border rounded-lg p-3 ${isPublished ? 'bg-green-50 border-green-200' : hasActualResult ? 'bg-blue-50 border-blue-200' : 'bg-gray-50'}`}>
+                    <div key={question.id} className={`border rounded-lg p-3 ${isPublished ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' : hasActualResult ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800' : 'bg-muted/50 dark:bg-muted/20'}`}>
                       <div className="flex items-center gap-3">
                         {/* Status Icon */}
                         <span className="text-lg flex-shrink-0">
@@ -467,7 +467,7 @@ export default function ManageGamePage() {
 
                         {/* Question Text */}
                         <div className="flex-1 min-w-0">
-                          <Label className={`font-medium ${isPublished ? 'text-green-700' : ''} block truncate`}>
+                          <Label className={`font-medium ${isPublished ? 'text-green-700 dark:text-green-400' : ''} block truncate`}>
                             {question.text}
                           </Label>
                         </div>
