@@ -60,7 +60,10 @@ export default function GamePage() {
   }, [gameId]);
 
   useEffect(() => {
-    if (gameId && (user || (isAnonymous && username))) {
+    // Only fetch bets if:
+    // 1. User is authenticated, OR
+    // 2. Anonymous user has submitted their name (showNameInput is false)
+    if (gameId && (user || (isAnonymous && username && !showNameInput))) {
       // Fetch or create bets for this user in this game
       const requestBody = user 
         ? { userId: user.id }
@@ -117,7 +120,7 @@ export default function GamePage() {
           setLoading(false);
         });
     }
-  }, [gameId, user, username, isAnonymous, router]);
+  }, [gameId, user, username, isAnonymous, showNameInput, router]);
 
   const handleAnswerChange = (betId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [betId]: value }));
