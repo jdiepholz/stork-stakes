@@ -422,7 +422,7 @@ export default function ManageGamePage() {
               <div><strong>Status:</strong> {gameData.status === 'RESULTS_PUBLISHED' ? 'Results Published' : 'Active'}</div>
               <div><strong>Participants:</strong> {gameData.participants.length}</div>
               <div><strong>Published:</strong> {gameData.publishedQuestions?.length || 0} of {gameData.questions?.length || 0} questions</div>
-              <div><strong>ID:</strong> <code className="bg-gray-100 px-2 py-1 rounded text-xs">{gameData.id}</code></div>
+              <div><strong>ID:</strong> <code className="bg-muted px-2 py-1 rounded text-xs">{gameData.id}</code></div>
             </div>
           </CardContent>
         </Card>
