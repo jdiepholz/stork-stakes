@@ -42,14 +42,14 @@ export default function JoinPage() {
           localStorage.removeItem('userId');
           localStorage.removeItem('userEmail');
           localStorage.removeItem('userName');
-          router.push('/auth?redirect=/games/new');
+          router.push('/auth?mode=register&redirect=/games/new');
         }
       } catch (error) {
         console.error('Error verifying user:', error);
-        router.push('/auth?redirect=/games/new');
+        router.push('/auth?mode=register&redirect=/games/new');
       }
     } else {
-      router.push('/auth?redirect=/games/new');
+      router.push('/auth?mode=register&redirect=/games/new');
     }
     setCreateLoading(false);
   };
