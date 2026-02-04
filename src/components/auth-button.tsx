@@ -28,25 +28,28 @@ export function AuthButton() {
       setUserName(null)
       router.push('/')
     } else {
-      // Login
-      router.push('/auth?mode=login')
+      // Redirect to auth page (defaults to register mode)
+      router.push('/auth')
     }
   }
 
   return (
     <Button
       variant="outline"
-      size="icon"
       onClick={handleAuth}
       className="fixed top-4 right-16 z-50"
-      title={isLoggedIn ? `Logout${userName ? ` (${userName})` : ''}` : 'Sign In'}
     >
       {isLoggedIn ? (
-        <LogOut className="h-[1.2rem] w-[1.2rem]" />
+        <>
+          <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
+          Log out
+        </>
       ) : (
-        <LogIn className="h-[1.2rem] w-[1.2rem]" />
+        <>
+          <LogIn className="h-[1.2rem] w-[1.2rem] mr-2" />
+          Sign up/in
+        </>
       )}
-      <span className="sr-only">{isLoggedIn ? 'Logout' : 'Sign In'}</span>
     </Button>
   )
 }
