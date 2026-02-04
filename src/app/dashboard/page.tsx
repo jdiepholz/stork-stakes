@@ -67,13 +67,6 @@ export default function DashboardPage() {
     router.push(`/games/${joinGameId.trim()}`);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
-    router.push('/auth');
-  };
-
   const copyGameLink = (gameId: string) => {
     const link = `${window.location.origin}/games/${gameId}`;
     navigator.clipboard.writeText(link);
@@ -94,13 +87,6 @@ export default function DashboardPage() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <div className="w-full max-w-4xl space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Welcome, {getDisplayName()}!</h1>
-          <Button variant="outline" onClick={handleLogout}>
-            Logout
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Create New Game */}
           <Card>
