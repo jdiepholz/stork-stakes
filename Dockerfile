@@ -4,6 +4,7 @@
 FROM node:latest AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
 RUN npm install
 
 # 2. Build the application
