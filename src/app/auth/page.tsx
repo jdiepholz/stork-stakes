@@ -13,12 +13,14 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/components/auth-provider';
 
 function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect');
   const mode = searchParams.get('mode');
+  const { login } = useAuth();
 
   const [isLogin, setIsLogin] = useState(mode !== 'register');
   const [email, setEmail] = useState('');
@@ -41,11 +43,11 @@ function AuthForm() {
 
         if (response.ok) {
           const user = await response.json();
-          localStorage.setItem('userId', user.id);
-          localStorage.setItem('userEmail', user.email);
-          if (user.name) {
-            localStorage.setItem('userName', user.name);
-          }
+          login({
+            id: user.id,
+            email: user.email,
+            name: user.name
+          });
 
           if (redirectTo) {
             router.push(redirectTo);
@@ -71,11 +73,11 @@ function AuthForm() {
 
         if (response.ok) {
           const user = await response.json();
-          localStorage.setItem('userId', user.id);
-          localStorage.setItem('userEmail', user.email);
-          if (user.name) {
-            localStorage.setItem('userName', user.name);
-          }
+          login({
+            id: user.id,
+            email: user.email,
+            name: user.name
+          });
 
           if (redirectTo) {
             router.push(redirectTo);
