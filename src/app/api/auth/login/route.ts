@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { signToken, setAuthCookie } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
@@ -34,6 +35,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
+    // Generate JWT and set cookie
+    const token = await signToken({ userId: user.id, email: user.email });
+    await setAuthCookie(token);
+
     // Return user without password
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _password, ...userWithoutPassword } = userWithPassword;
@@ -43,3 +48,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Login failed' }, { status: 500 });
   }
 }
+

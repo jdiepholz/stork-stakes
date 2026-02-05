@@ -1,11 +1,18 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
-  const { name, createdBy } = await req.json();
+  const { name } = await req.json();
 
-  if (!name || !createdBy) {
-    return NextResponse.json({ error: 'Missing name or createdBy' }, { status: 400 });
+  const session = await getAuthenticatedUser(req);
+  if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const createdBy = session.userId;
+
+  if (!name) {
+    return NextResponse.json({ error: 'Missing name' }, { status: 400 });
   }
 
   try {
@@ -30,3 +37,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Error creating game' }, { status: 500 });
   }
 }
+

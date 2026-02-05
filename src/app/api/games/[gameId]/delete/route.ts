@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -8,7 +9,8 @@ export async function DELETE(
   { params }: { params: Promise<{ gameId: string }> }
 ) {
   const { gameId } = await params;
-  const userId = req.headers.get('Authorization');
+  const session = await getAuthenticatedUser(req);
+  const userId = session?.userId;
 
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllQuestionsForGame, Question } from '@/lib/questions';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -23,7 +24,10 @@ interface BetWithQuestionInfo extends Bet {
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = await params;
-  const { userId, username } = await req.json();
+  const { username } = await req.json();
+  
+  const session = await getAuthenticatedUser(req);
+  const userId = session?.userId;
 
   if (!userId && !username) {
     return NextResponse.json({ error: 'Missing userId or username' }, { status: 400 });

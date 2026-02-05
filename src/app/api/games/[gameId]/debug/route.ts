@@ -1,10 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = await params;
+  const session = await getAuthenticatedUser(req);
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     // Get the game directly from database

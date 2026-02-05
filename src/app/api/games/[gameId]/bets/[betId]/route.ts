@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -8,7 +9,17 @@ export async function PATCH(
   { params }: { params: Promise<{ gameId: string; betId: string }> }
 ) {
   const { betId } = await params;
-  const { answer, userId, username } = await req.json();
+  const body = await req.json();
+  let { userId, username } = body;
+  const { answer } = body;
+  
+  const session = await getAuthenticatedUser(req);
+  if (session) {
+    userId = session.userId;
+  } else if (userId) {
+    // User claims identity but is not authenticated
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   if (!answer || (!userId && !username)) {
     return NextResponse.json({ error: 'Missing answer or user identifier' }, { status: 400 });

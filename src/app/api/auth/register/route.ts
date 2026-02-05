@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { signToken, setAuthCookie } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   const { email, password, name } = await req.json();
@@ -38,6 +39,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Generate JWT and set cookie
+    const token = await signToken({ userId: user.id, email: user.email });
+    await setAuthCookie(token);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _password, ...userWithoutPassword } = user as {
       id: string;
@@ -54,3 +59,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Registration failed' }, { status: 500 });
   }
 }
+
