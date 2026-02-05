@@ -85,7 +85,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-4xl space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Create New Game */}
@@ -140,7 +140,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {myGames.map((game) => (
-                  <div key={game.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={game.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg gap-4">
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-medium">{game.name}</h3>

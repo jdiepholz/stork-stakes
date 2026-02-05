@@ -89,9 +89,9 @@ function AuthForm() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <form onSubmit={handleSubmit}>
-        <Card className="w-[400px]">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
+      <form onSubmit={handleSubmit} className="w-full max-w-[400px]">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>{isLogin ? 'Sign In' : 'Create Account'}</CardTitle>
             <CardDescription>

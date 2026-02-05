@@ -97,7 +97,7 @@ export default function GameOverviewPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
         <div>Loading...</div>
       </main>
     );
@@ -124,11 +124,11 @@ export default function GameOverviewPage() {
   const hasNumericalScoring = leaderboard.length > 0;
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-6xl space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold">{gameData.name} - Overview</h1>
-          <div className="space-x-2">
+          <div className="flex flex-wrap gap-2 justify-center md:justify-end">
             <Button variant="outline" onClick={copyGameLink}>
               Copy Game Link
             </Button>

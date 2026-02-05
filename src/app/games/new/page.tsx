@@ -96,9 +96,9 @@ export default function NewGamePage() {
   // Step 1: Game Name
   if (step === 'name') {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
-        <form onSubmit={handleSubmit}>
-          <Card className="w-[350px]">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
+        <form onSubmit={handleSubmit} className="w-full max-w-[350px]">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Create a New Game</CardTitle>
               <CardDescription>Enter a name for your baby prediction game.</CardDescription>
@@ -128,7 +128,7 @@ export default function NewGamePage() {
   // Step 2: Questions Setup
   if (step === 'questions' && gameId) {
     return (
-      <main className="flex min-h-screen flex-col items-center p-24">
+      <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
         <div className="w-full max-w-4xl space-y-6">
           <div className="text-center">
             <h1 className="text-3xl font-bold">Setup Your Game Questions</h1>

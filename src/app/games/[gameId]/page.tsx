@@ -174,7 +174,7 @@ export default function GamePage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
         <div>Loading...</div>
       </main>
     );
@@ -192,7 +192,7 @@ export default function GamePage() {
     };
 
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Welcome to the Game!</CardTitle>
@@ -237,7 +237,7 @@ export default function GamePage() {
   // If user is the creator, redirect them to the overview or manage page
   if (gameData.isCreator) {
     return (
-      <main className="flex min-h-screen flex-col items-center p-24">
+      <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
         <div className="w-full max-w-4xl space-y-6">
           <div className="text-center">
             <h1 className="text-3xl font-bold">You&apos;re the Game Creator!</h1>
@@ -294,7 +294,7 @@ export default function GamePage() {
   const hasExistingAnswers = gameData.bets.some((bet: BetWithQuestionInfo) => bet.answer);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-2xl space-y-6">
         {/* User identification banner */}
         {isAnonymous && username && (
@@ -321,19 +321,21 @@ export default function GamePage() {
           </Card>
         )}
 
-        <div className="flex justify-between items-center">
+<div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl font-bold">Make Your Predictions!</h1>
-          <div className="space-x-2">
-            <Button 
-              variant="outline" 
+          <div className="flex gap-2 w-full md:w-auto">
+            <Button
+              variant="outline"
               onClick={() => router.push(`/games/${gameId}/overview`)}
+              className="flex-1 md:flex-none"
             >
               View Overview
             </Button>
             {user && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => router.push('/dashboard')}
+                className="flex-1 md:flex-none"
               >
                 Dashboard
               </Button>

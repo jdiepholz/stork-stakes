@@ -373,7 +373,7 @@ export default function ManageGamePage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
         <div>Loading...</div>
       </main>
     );
@@ -395,11 +395,11 @@ export default function ManageGamePage() {
   const hasNumericalScoring = leaderboard.length > 0;
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-6xl space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold">Manage: {gameData.name}</h1>
-          <div className="space-x-2">
+          <div className="flex flex-wrap gap-2 justify-center md:justify-end">
             <Button variant="outline" onClick={() => router.push(`/games/${gameId}/questions`)}>
               ✏️ Edit Questions
             </Button>
@@ -459,58 +459,62 @@ export default function ManageGamePage() {
                   
                   return (
                     <div key={question.id} className={`border rounded-lg p-3 ${isPublished ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' : hasActualResult ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800' : 'bg-muted/50 dark:bg-muted/20'}`}>
-                      <div className="flex items-center gap-3">
-                        {/* Status Icon */}
-                        <span className="text-lg flex-shrink-0">
-                          {isPublished ? '✅' : hasActualResult ? '🟢' : '⚪'}
-                        </span>
+                      <div className="flex flex-col md:flex-row md:items-center gap-3">
+                        <div className="flex items-center gap-3 flex-1 min-w-0 w-full">
+                          {/* Status Icon */}
+                          <span className="text-lg flex-shrink-0">
+                            {isPublished ? '✅' : hasActualResult ? '🟢' : '⚪'}
+                          </span>
 
-                        {/* Question Text */}
-                        <div className="flex-1 min-w-0">
-                          <Label className={`font-medium ${isPublished ? 'text-green-700 dark:text-green-400' : ''} block truncate`}>
-                            {question.text}
-                          </Label>
+                          {/* Question Text */}
+                          <div className="flex-1 min-w-0">
+                            <Label className={`font-medium ${isPublished ? 'text-green-700 dark:text-green-400' : ''} block truncate`}>
+                              {question.text}
+                            </Label>
+                          </div>
                         </div>
 
-                        {/* Result Input */}
-                        <div className="w-40 flex-shrink-0">
-                          <DynamicResultInput
-                            question={question}
-                            value={actualResults[question.id] || ''}
-                            onChange={handleResultChange}
-                            hideLabel={true}
-                          />
-                        </div>
+                        <div className="flex items-center gap-2 justify-end w-full md:w-auto">
+                          {/* Result Input */}
+                          <div className="flex-1 md:w-40 md:flex-none">
+                            <DynamicResultInput
+                              question={question}
+                              value={actualResults[question.id] || ''}
+                              onChange={handleResultChange}
+                              hideLabel={true}
+                            />
+                          </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 flex-shrink-0">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleSaveQuestion(question.id)}
-                            className="px-2"
-                          >
-                            💾
-                          </Button>
-                          {!isPublished ? (
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 flex-shrink-0">
                             <Button
                               size="sm"
-                              onClick={() => handleQuickPublish(question.text)}
-                              disabled={!hasActualResult}
+                              variant="outline"
+                              onClick={() => handleSaveQuestion(question.id)}
                               className="px-2"
                             >
-                              🚀
+                              💾
                             </Button>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => handleUnpublish(question.text)}
-                              className="px-2"
-                            >
-                              🔄
-                            </Button>
-                          )}
+                            {!isPublished ? (
+                              <Button
+                                size="sm"
+                                onClick={() => handleQuickPublish(question.text)}
+                                disabled={!hasActualResult}
+                                className="px-2"
+                              >
+                                🚀
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => handleUnpublish(question.text)}
+                                className="px-2"
+                              >
+                                🔄
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
