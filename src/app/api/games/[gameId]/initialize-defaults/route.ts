@@ -17,10 +17,10 @@ export async function POST(
     // Initialize default questions
     const questions = await initializeDefaultQuestions(gameId, createdBy);
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       questionsCreated: questions.length,
-      questions 
+      questions,
     });
   } catch (error) {
     console.error('Error initializing default questions:', error);

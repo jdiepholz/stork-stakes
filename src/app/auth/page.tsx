@@ -3,7 +3,14 @@
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -12,7 +19,7 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect');
   const mode = searchParams.get('mode');
-  
+
   const [isLogin, setIsLogin] = useState(mode !== 'register');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,7 +46,7 @@ function AuthForm() {
           if (user.name) {
             localStorage.setItem('userName', user.name);
           }
-          
+
           if (redirectTo) {
             router.push(redirectTo);
           } else {
@@ -69,7 +76,7 @@ function AuthForm() {
           if (user.name) {
             localStorage.setItem('userName', user.name);
           }
-          
+
           if (redirectTo) {
             router.push(redirectTo);
           } else {
@@ -95,10 +102,9 @@ function AuthForm() {
           <CardHeader>
             <CardTitle>{isLogin ? 'Sign In' : 'Create Account'}</CardTitle>
             <CardDescription>
-              {isLogin 
-                ? 'Enter your email to sign in to your account.' 
-                : 'Enter your details to create a new account.'
-              }
+              {isLogin
+                ? 'Enter your email to sign in to your account.'
+                : 'Enter your details to create a new account.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -118,7 +124,9 @@ function AuthForm() {
               <Input
                 id="password"
                 type="password"
-                placeholder={isLogin ? "Enter your password" : "Create a password (min 6 characters)"}
+                placeholder={
+                  isLogin ? 'Enter your password' : 'Create a password (min 6 characters)'
+                }
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -138,11 +146,11 @@ function AuthForm() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
+              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
             </Button>
-            <Button 
-              type="button" 
-              variant="ghost" 
+            <Button
+              type="button"
+              variant="ghost"
               onClick={() => setIsLogin(!isLogin)}
               className="w-full"
             >

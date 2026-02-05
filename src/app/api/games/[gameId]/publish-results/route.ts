@@ -14,7 +14,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
   try {
     // Verify the user is the game creator and game is not soft-deleted
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null,
       },
@@ -25,7 +25,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     }
 
     if (game.createdBy !== userId) {
-      return NextResponse.json({ error: 'Only the game creator can publish results' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Only the game creator can publish results' },
+        { status: 403 }
+      );
     }
 
     // Update the game status to published

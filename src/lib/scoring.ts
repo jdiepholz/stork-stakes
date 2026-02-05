@@ -48,13 +48,13 @@ export function calculateParticipantScores(
   publishedQuestions: Question[]
 ): ParticipantScore[] {
   // Step 1: Calculate raw difference scores for every participant and question
-  const participantRawScores = participants.map(participant => {
+  const participantRawScores = participants.map((participant) => {
     const questionScores: ParticipantScore['questionScores'] = [];
 
-    publishedQuestions.forEach(question => {
-      const prediction = participant.predictions.find(p => p.question === question.text);
+    publishedQuestions.forEach((question) => {
+      const prediction = participant.predictions.find((p) => p.question === question.text);
       const actualValue = actualResults[question.id];
-      
+
       if (actualValue !== undefined) {
         const score = calculateQuestionScore(question, prediction?.answer || null, actualValue);
         questionScores.push({
@@ -62,7 +62,7 @@ export function calculateParticipantScores(
           predicted: prediction?.answer || null,
           actual: actualValue,
           score: score.value, // Raw difference
-          isNumerical: score.isNumerical
+          isNumerical: score.isNumerical,
         });
       }
     });
@@ -72,25 +72,25 @@ export function calculateParticipantScores(
       userEmail: participant.userEmail,
       userName: participant.userName,
       totalScore: 0, // Will be replaced by normalized score
-      questionScores
+      questionScores,
     };
   });
 
   // Step 2: Find the maximum raw score for each question across all participants
   const maxScoresByQuestion: { [key: string]: number } = {};
-  publishedQuestions.forEach(question => {
+  publishedQuestions.forEach((question) => {
     const scoresForQuestion = participantRawScores
-      .map(p => p.questionScores.find(qs => qs.question === question.text)?.score ?? 0)
-      .filter(score => score !== undefined);
-    
+      .map((p) => p.questionScores.find((qs) => qs.question === question.text)?.score ?? 0)
+      .filter((score) => score !== undefined);
+
     maxScoresByQuestion[question.text] = Math.max(...scoresForQuestion, 0);
   });
 
   // Step 3: Calculate normalized scores and the new total score
-  const finalScores = participantRawScores.map(participant => {
+  const finalScores = participantRawScores.map((participant) => {
     let newTotalScore = 0;
-    
-    const normalizedQuestionScores = participant.questionScores.map(qs => {
+
+    const normalizedQuestionScores = participant.questionScores.map((qs) => {
       const maxScore = maxScoresByQuestion[qs.question];
       let normalizedScore = 0;
 
@@ -103,9 +103,9 @@ export function calculateParticipantScores(
         }
         // If maxScore is 0, it means everyone was perfect, so score is 0.
       }
-      
+
       newTotalScore += normalizedScore;
-      
+
       // We can return the normalized score in the `score` field
       return { ...qs, score: normalizedScore };
     });
@@ -113,7 +113,7 @@ export function calculateParticipantScores(
     return {
       ...participant,
       totalScore: newTotalScore,
-      questionScores: normalizedQuestionScores
+      questionScores: normalizedQuestionScores,
     };
   });
 
@@ -139,7 +139,11 @@ function getActualValueForQuestion(question: string, actualResults: ActualResult
 }
 */
 
-function calculateQuestionScore(question: Question, predicted: string | null, actual: string): { value: number; isNumerical: boolean } {
+function calculateQuestionScore(
+  question: Question,
+  predicted: string | null,
+  actual: string
+): { value: number; isNumerical: boolean } {
   // For non-scoreable questions, return 0
   if (!predicted) {
     return { value: 0, isNumerical: false };
@@ -149,11 +153,11 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
     case 'NUMBER':
       const predictedNum = parseFloat(predicted.replace(',', '.'));
       const actualNum = parseFloat(actual.replace(',', '.'));
-      
+
       if (isNaN(predictedNum) || isNaN(actualNum)) {
         return { value: 0, isNumerical: false };
       }
-      
+
       // Calculate absolute difference
       const difference = Math.abs(actualNum - predictedNum);
       return { value: difference, isNumerical: true };
@@ -170,10 +174,10 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
         if (isNaN(predictedDate.getTime()) || isNaN(actualDate.getTime())) {
           return { value: 0, isNumerical: false };
         }
-        
+
         const differenceInMs = Math.abs(actualDate.getTime() - predictedDate.getTime());
         const differenceInDays = Math.round(differenceInMs / (1000 * 60 * 60 * 24));
-        
+
         return { value: differenceInDays, isNumerical: true };
       } catch {
         return { value: 0, isNumerical: false };
@@ -183,14 +187,19 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
       try {
         const [predictedHours, predictedMinutes] = predicted.split(':').map(Number);
         const [actualHours, actualMinutes] = actual.split(':').map(Number);
-        
-        if (isNaN(predictedHours) || isNaN(predictedMinutes) || isNaN(actualHours) || isNaN(actualMinutes)) {
+
+        if (
+          isNaN(predictedHours) ||
+          isNaN(predictedMinutes) ||
+          isNaN(actualHours) ||
+          isNaN(actualMinutes)
+        ) {
           return { value: 0, isNumerical: false };
         }
-        
+
         const predictedTotalMinutes = predictedHours * 60 + predictedMinutes;
         const actualTotalMinutes = actualHours * 60 + actualMinutes;
-        
+
         const difference = Math.abs(actualTotalMinutes - predictedTotalMinutes);
         return { value: difference, isNumerical: true };
       } catch {
@@ -201,7 +210,7 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
       // Exact match scoring for SELECT questions
       return {
         value: predicted.toLowerCase() === actual.toLowerCase() ? 0 : 1,
-        isNumerical: false
+        isNumerical: false,
       };
 
     case 'COLORPICKER':
@@ -209,18 +218,18 @@ function calculateQuestionScore(question: Question, predicted: string | null, ac
       try {
         const predictedColor = hexToRgb(predicted);
         const actualColor = hexToRgb(actual);
-        
+
         if (!predictedColor || !actualColor) {
           return { value: 0, isNumerical: false };
         }
-        
+
         // Calculate Euclidean distance in RGB space
         const rDiff = predictedColor.r - actualColor.r;
         const gDiff = predictedColor.g - actualColor.g;
         const bDiff = predictedColor.b - actualColor.b;
-        
+
         const colorDistance = Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
-        
+
         return { value: colorDistance, isNumerical: true };
       } catch {
         return { value: 0, isNumerical: false };
@@ -241,21 +250,24 @@ function isNumericalQuestion(questionType: string): boolean {
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   // Remove # if present
   hex = hex.replace('#', '');
-  
+
   // Handle 3-digit hex colors (e.g., #RGB -> #RRGGBB)
   if (hex.length === 3) {
-    hex = hex.split('').map(char => char + char).join('');
+    hex = hex
+      .split('')
+      .map((char) => char + char)
+      .join('');
   }
-  
+
   // Validate hex format
   if (!/^[0-9A-Fa-f]{6}$/.test(hex)) {
     return null;
   }
-  
+
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
-  
+
   return { r, g, b };
 }
 
@@ -263,6 +275,6 @@ export function getLeaderboard(participantScores: ParticipantScore[]): Participa
   // Sort by total score (ascending - lower is better)
   // Filter out participants with 0 total score (no numerical predictions)
   return participantScores
-    .filter(p => p.totalScore > 0 || p.questionScores.some(q => q.isNumerical))
+    .filter((p) => p.totalScore > 0 || p.questionScores.some((q) => q.isNumerical))
     .sort((a, b) => a.totalScore - b.totalScore);
 }

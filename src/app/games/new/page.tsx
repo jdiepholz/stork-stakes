@@ -3,10 +3,24 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 // import { defaultQuestions } from '@/lib/questions'; // Unused
 import GameQuestionsSetup from '@/components/GameQuestionsSetup';
@@ -23,7 +37,7 @@ export default function NewGamePage() {
     // Check if user is authenticated
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
-    
+
     if (!userId || !userEmail) {
       router.push('/auth?redirect=/games/new');
       return;
@@ -117,7 +131,9 @@ export default function NewGamePage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full">Next: Setup Questions</Button>
+              <Button type="submit" className="w-full">
+                Next: Setup Questions
+              </Button>
             </CardFooter>
           </Card>
         </form>
@@ -132,12 +148,13 @@ export default function NewGamePage() {
         <div className="w-full max-w-4xl space-y-6">
           <div className="text-center">
             <h1 className="text-3xl font-bold">Setup Your Game Questions</h1>
-            <p className="text-gray-600 mt-2">
-              Customize the questions for &quot;{gameName}&quot;. You can reorder, delete, or add custom questions.
+            <p className="mt-2 text-gray-600">
+              Customize the questions for &quot;{gameName}&quot;. You can reorder, delete, or add
+              custom questions.
             </p>
           </div>
-          
-          <GameQuestionsSetup 
+
+          <GameQuestionsSetup
             gameId={gameId}
             userId={user.id}
             onComplete={handleQuestionsComplete}
@@ -152,18 +169,22 @@ export default function NewGamePage() {
   return (
     <>
       {/* Success Dialog */}
-      <Dialog open={successDialog.open} onOpenChange={(open) => setSuccessDialog({ ...successDialog, open })}>
+      <Dialog
+        open={successDialog.open}
+        onOpenChange={(open) => setSuccessDialog({ ...successDialog, open })}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>🎉 Game Created Successfully!</DialogTitle>
             <DialogDescription>
-              Your prediction game has been created. Share the link below with your friends to start collecting predictions!
+              Your prediction game has been created. Share the link below with your friends to start
+              collecting predictions!
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-4">
               <Label className="text-sm font-medium">Game Link:</Label>
-              <div className="flex items-center space-x-2 mt-1">
+              <div className="mt-1 flex items-center space-x-2">
                 <Input value={successDialog.gameLink} readOnly className="text-sm" />
                 <Button
                   variant="outline"
@@ -179,7 +200,10 @@ export default function NewGamePage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => copyLinkAndRedirect(successDialog.gameId, successDialog.gameLink)}>
+            <Button
+              variant="outline"
+              onClick={() => copyLinkAndRedirect(successDialog.gameId, successDialog.gameLink)}
+            >
               Copy Link & Continue
             </Button>
           </DialogFooter>

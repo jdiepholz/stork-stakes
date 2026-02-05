@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
   try {
     // Verify the user is the game creator and game is not soft-deleted
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null,
       },
@@ -28,14 +28,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     }
 
     if (game.createdBy !== userId) {
-      return NextResponse.json({ error: 'Only the game creator can set actual results' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Only the game creator can set actual results' },
+        { status: 403 }
+      );
     }
 
     // Process the dynamic results data
     const actualResultsData: Record<string, unknown> = {};
-    
+
     // Clean and store only non-empty values
-    Object.keys(requestBody).forEach(key => {
+    Object.keys(requestBody).forEach((key) => {
       const value = requestBody[key];
       if (value && typeof value === 'string' && value.trim() !== '') {
         actualResultsData[key] = value.trim();

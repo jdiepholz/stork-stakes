@@ -5,10 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { defaultQuestions } from '@/lib/questions';
-import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DroppableProvided,
+  DraggableProvided,
+  DraggableStateSnapshot,
+} from '@hello-pangea/dnd';
 
 interface Question {
   id?: string;
@@ -30,7 +46,14 @@ interface GameQuestionsSetupProps {
   existingQuestions?: Question[]; // Existing questions to load when editing
 }
 
-export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack, mode = 'create', existingQuestions = [] }: GameQuestionsSetupProps) {
+export default function GameQuestionsSetup({
+  gameId,
+  userId,
+  onComplete,
+  onBack,
+  mode = 'create',
+  existingQuestions = [],
+}: GameQuestionsSetupProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [newQuestionType, setNewQuestionType] = useState('NUMBER');
@@ -51,7 +74,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
         placeholder: questionData.placeholder || undefined,
         options: questionData.options || undefined,
         order: index + 1,
-        isDefault: true
+        isDefault: true,
       }));
       setQuestions(initialQuestions);
     }
@@ -67,7 +90,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
     // Update order numbers
     const updatedQuestions = reorderedQuestions.map((q, index) => ({
       ...q,
-      order: index + 1
+      order: index + 1,
     }));
 
     setQuestions(updatedQuestions);
@@ -75,16 +98,18 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
 
   const isQuestionValid = () => {
     if (!newQuestion.trim()) return false;
-    
+
     // Check for duplicate question text
-    const isDuplicate = questions.some(q => q.text.toLowerCase().trim() === newQuestion.toLowerCase().trim());
+    const isDuplicate = questions.some(
+      (q) => q.text.toLowerCase().trim() === newQuestion.toLowerCase().trim()
+    );
     if (isDuplicate) return false;
-    
+
     if (newQuestionType === 'SELECT') {
-      const validOptions = newQuestionOptions.filter(option => option.trim());
+      const validOptions = newQuestionOptions.filter((option) => option.trim());
       return validOptions.length >= 2;
     }
-    
+
     return true;
   };
 
@@ -95,7 +120,9 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
     }
 
     // Check for duplicate question text
-    const isDuplicate = questions.some(q => q.text.toLowerCase().trim() === newQuestion.toLowerCase().trim());
+    const isDuplicate = questions.some(
+      (q) => q.text.toLowerCase().trim() === newQuestion.toLowerCase().trim()
+    );
     if (isDuplicate) {
       toast.error('A question with this text already exists');
       return;
@@ -103,7 +130,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
 
     // Validate SELECT questions have at least 2 options
     if (newQuestionType === 'SELECT') {
-      const validOptions = newQuestionOptions.filter(option => option.trim());
+      const validOptions = newQuestionOptions.filter((option) => option.trim());
       if (validOptions.length < 2) {
         toast.error('SELECT questions must have at least 2 options');
         return;
@@ -114,10 +141,11 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
       text: newQuestion.trim(),
       type: newQuestionType,
       placeholder: newQuestionPlaceholder || undefined,
-      options: newQuestionType === 'SELECT' ? newQuestionOptions.filter(opt => opt.trim()) : undefined,
+      options:
+        newQuestionType === 'SELECT' ? newQuestionOptions.filter((opt) => opt.trim()) : undefined,
       order: questions.length + 1,
       isDefault: false,
-      isCustom: true
+      isCustom: true,
     };
 
     setQuestions([...questions, customQuestion]);
@@ -144,7 +172,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
       // Get the final list of questions in the correct order
       const finalQuestions = questions.map((q, index) => ({
         ...q,
-        order: index + 1
+        order: index + 1,
       }));
 
       if (mode === 'edit') {
@@ -152,7 +180,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
         // First, delete all existing questions for this game
         const deleteResponse = await fetch(`/api/games/${gameId}/questions`, {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         });
 
         if (!deleteResponse.ok) {
@@ -171,7 +199,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
               options: question.options,
               createdBy: userId,
               isDefault: question.isDefault,
-              order: question.order
+              order: question.order,
             }),
           });
 
@@ -197,7 +225,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
               options: question.options,
               createdBy: userId,
               isDefault: question.isDefault,
-              order: question.order
+              order: question.order,
             }),
           });
 
@@ -215,7 +243,8 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
       onComplete(gameId);
     } catch (error) {
       console.error('Error setting up questions:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Error setting up questions. Please try again.';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error setting up questions. Please try again.';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -228,9 +257,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Game Questions ({questions.length})</span>
-            <div className="text-sm text-muted-foreground">
-              Drag to reorder • Click X to remove
-            </div>
+            <div className="text-muted-foreground text-sm">Drag to reorder • Click X to remove</div>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -239,35 +266,39 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
               {(provided: DroppableProvided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
                   {questions.map((question, index) => (
-                    <Draggable key={`question-${index}`} draggableId={`question-${index}`} index={index}>
+                    <Draggable
+                      key={`question-${index}`}
+                      draggableId={`question-${index}`}
+                      index={index}
+                    >
                       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
-                            snapshot.isDragging 
-                              ? 'bg-secondary/20 border-secondary shadow-lg' 
-                              : question.isDefault 
-                                ? 'bg-muted border-muted-foreground/20' 
+                          className={`flex items-center justify-between rounded-lg border p-3 transition-colors ${
+                            snapshot.isDragging
+                              ? 'bg-secondary/20 border-secondary shadow-lg'
+                              : question.isDefault
+                                ? 'bg-muted border-muted-foreground/20'
                                 : 'bg-secondary/20 border-secondary'
                           }`}
                         >
-                          <div className="flex items-center space-x-3 flex-1">
-                            <div className="text-sm font-medium text-muted-foreground min-w-[24px]">
+                          <div className="flex flex-1 items-center space-x-3">
+                            <div className="text-muted-foreground min-w-[24px] text-sm font-medium">
                               {question.order}.
                             </div>
                             <div className="flex-1">
                               <div className="text-sm font-medium">{question.text}</div>
-                              <div className="text-xs text-muted-foreground flex items-center space-x-2">
-                                <span className={`px-2 py-1 rounded ${
-                                  question.isDefault ? 'bg-muted' : 'bg-secondary/30'
-                                }`}>
+                              <div className="text-muted-foreground flex items-center space-x-2 text-xs">
+                                <span
+                                  className={`rounded px-2 py-1 ${
+                                    question.isDefault ? 'bg-muted' : 'bg-secondary/30'
+                                  }`}
+                                >
                                   {question.type}
                                 </span>
-                                <span>
-                                  {question.isDefault ? 'Default' : 'Custom'}
-                                </span>
+                                <span>{question.isDefault ? 'Default' : 'Custom'}</span>
                               </div>
                             </div>
                           </div>
@@ -277,7 +308,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
                               variant="ghost"
                               size="sm"
                               onClick={() => deleteQuestion(index)}
-                              className="text-red-600 hover:text-red-800 hover:bg-red-500/10 dark:text-red-400 dark:hover:text-red-300"
+                              className="text-red-600 hover:bg-red-500/10 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                             >
                               ✕
                             </Button>
@@ -294,7 +325,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="w-full mt-4">
+              <Button variant="outline" className="mt-4 w-full">
                 + Add Custom Question
               </Button>
             </DialogTrigger>
@@ -302,7 +333,8 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
               <DialogHeader>
                 <DialogTitle>Add Custom Question</DialogTitle>
                 <DialogDescription>
-                  Add a custom question to your game. Participants will be able to make predictions for this question.
+                  Add a custom question to your game. Participants will be able to make predictions
+                  for this question.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -321,7 +353,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
                     id="type"
                     value={newQuestionType}
                     onChange={(e) => setNewQuestionType(e.target.value)}
-                    className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                    className="border-input bg-background focus:ring-ring text-foreground w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   >
                     <option value="NUMBER">Number</option>
                     <option value="DATE">Date</option>
@@ -330,7 +362,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
                     <option value="COLORPICKER">Color Picker</option>
                   </select>
                 </div>
-                {(newQuestionType !== 'SELECT' && newQuestionType !== 'COLORPICKER') && (
+                {newQuestionType !== 'SELECT' && newQuestionType !== 'COLORPICKER' && (
                   <div>
                     <Label htmlFor="placeholder">Placeholder (optional)</Label>
                     <Input
@@ -338,10 +370,13 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
                       value={newQuestionPlaceholder}
                       onChange={(e) => setNewQuestionPlaceholder(e.target.value)}
                       placeholder={
-                        newQuestionType === 'NUMBER' ? 'e.g., Enter a number' :
-                        newQuestionType === 'DATE' ? 'e.g., Select a date' :
-                        newQuestionType === 'TIME' ? 'e.g., Select a time' :
-                        'Enter placeholder text'
+                        newQuestionType === 'NUMBER'
+                          ? 'e.g., Enter a number'
+                          : newQuestionType === 'DATE'
+                            ? 'e.g., Select a date'
+                            : newQuestionType === 'TIME'
+                              ? 'e.g., Select a time'
+                              : 'Enter placeholder text'
                       }
                     />
                   </div>
@@ -356,7 +391,7 @@ export default function GameQuestionsSetup({ gameId, userId, onComplete, onBack,
                       placeholder={`Option 1
 Option 2
 Option 3`}
-                      className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                      className="border-input bg-background focus:ring-ring text-foreground w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                       rows={4}
                     />
                   </div>
@@ -380,10 +415,13 @@ Option 3`}
           {mode === 'edit' ? '← Back to Management' : '← Back to Game Name'}
         </Button>
         <Button onClick={handleComplete} disabled={loading}>
-          {loading 
-            ? (mode === 'edit' ? 'Updating...' : 'Setting up...') 
-            : (mode === 'edit' ? 'Save Changes' : 'Create Game & Continue →')
-          }
+          {loading
+            ? mode === 'edit'
+              ? 'Updating...'
+              : 'Setting up...'
+            : mode === 'edit'
+              ? 'Save Changes'
+              : 'Create Game & Continue →'}
         </Button>
       </div>
     </div>

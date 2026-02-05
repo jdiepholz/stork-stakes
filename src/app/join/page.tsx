@@ -31,10 +31,10 @@ export default function JoinPage() {
       try {
         const response = await fetch('/api/users/me/games', {
           headers: {
-            'Authorization': userId,
+            Authorization: userId,
           },
         });
-        
+
         if (response.ok) {
           router.push('/games/new');
         } else {
@@ -55,25 +55,25 @@ export default function JoinPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="from-background to-muted/20 min-h-screen bg-gradient-to-b">
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="mb-12 text-center">
+            <h1 className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
               Get Started
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               Join an existing game or create your own
             </p>
           </div>
 
           {/* Two Options */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             {/* Join Game Card */}
-            <Card className="border-2 hover:border-primary/50 transition-all">
+            <Card className="hover:border-primary/50 border-2 transition-all">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
                   <span className="text-2xl">🎮</span>
                 </div>
                 <CardTitle className="text-2xl">Join a Game</CardTitle>
@@ -96,24 +96,24 @@ export default function JoinPage() {
                     }}
                   />
                 </div>
-                <Button 
-                  onClick={handleJoinGame} 
+                <Button
+                  onClick={handleJoinGame}
                   disabled={!gameHash.trim() || loading}
                   className="w-full"
                   size="lg"
                 >
                   Join Game →
                 </Button>
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-muted-foreground text-center text-sm">
                   No account required to participate!
                 </p>
               </CardContent>
             </Card>
 
             {/* Create Game Card */}
-            <Card className="border-2 hover:border-primary/50 transition-all">
+            <Card className="hover:border-primary/50 border-2 transition-all">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
                   <span className="text-2xl">✨</span>
                 </div>
                 <CardTitle className="text-2xl">Create a Game</CardTitle>
@@ -122,7 +122,7 @@ export default function JoinPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3 text-sm text-muted-foreground">
+                <div className="text-muted-foreground space-y-3 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
                     <span>Customize questions</span>
@@ -140,7 +140,7 @@ export default function JoinPage() {
                     <span>Manage game settings</span>
                   </div>
                 </div>
-                <Button 
+                <Button
                   onClick={handleCreateGame}
                   variant="default"
                   className="w-full"
@@ -149,7 +149,7 @@ export default function JoinPage() {
                 >
                   {createLoading ? 'Checking...' : 'Create Game →'}
                 </Button>
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-muted-foreground text-center text-sm">
                   Account required for game creators
                 </p>
               </CardContent>
@@ -157,21 +157,18 @@ export default function JoinPage() {
           </div>
 
           {/* Back to Home */}
-          <div className="text-center mt-8 space-y-4">
-            <div className="text-sm text-muted-foreground">
+          <div className="mt-8 space-y-4 text-center">
+            <div className="text-muted-foreground text-sm">
               Already have an account?{' '}
               <Button
                 variant="link"
-                className="p-0 h-auto font-semibold"
+                className="h-auto p-0 font-semibold"
                 onClick={() => router.push('/auth?mode=login')}
               >
                 Sign In
               </Button>
             </div>
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/')}
-            >
+            <Button variant="ghost" onClick={() => router.push('/')}>
               ← Back to Home
             </Button>
           </div>

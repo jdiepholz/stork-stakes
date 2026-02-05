@@ -23,7 +23,15 @@ interface GameOverview {
       answer: string | null;
     }[];
   }[];
-  questions: { id: string; text: string; type: string; placeholder?: string; options: string[] | null; isDefault: boolean; order: number }[];
+  questions: {
+    id: string;
+    text: string;
+    type: string;
+    placeholder?: string;
+    options: string[] | null;
+    isDefault: boolean;
+    order: number;
+  }[];
   error?: string;
 }
 
@@ -40,7 +48,7 @@ export default function GameOverviewPage() {
     // Check if user is authenticated
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
-    
+
     if (userId && userEmail) {
       setUser({ id: userId, email: userEmail });
       setIsAnonymous(false);
@@ -109,36 +117,34 @@ export default function GameOverviewPage() {
 
   const isCreator = user && user.id === gameData.createdBy;
   const resultsPublished = gameData.status === 'RESULTS_PUBLISHED';
-  const hasPublishedQuestions = gameData.publishedQuestions && gameData.publishedQuestions.length > 0;
+  const hasPublishedQuestions =
+    gameData.publishedQuestions && gameData.publishedQuestions.length > 0;
   const canSeeResults = isCreator || resultsPublished || hasPublishedQuestions;
 
   // Calculate scores for published questions
-  const participantScores = gameData.actualResults && hasPublishedQuestions 
-    ? calculateParticipantScores(
-        gameData.participants, 
-        gameData.actualResults, 
-        gameData.questions.filter(q => gameData.publishedQuestions.includes(q.text))
-      )
-    : [];
+  const participantScores =
+    gameData.actualResults && hasPublishedQuestions
+      ? calculateParticipantScores(
+          gameData.participants,
+          gameData.actualResults,
+          gameData.questions.filter((q) => gameData.publishedQuestions.includes(q.text))
+        )
+      : [];
   const leaderboard = getLeaderboard(participantScores);
   const hasNumericalScoring = leaderboard.length > 0;
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-6xl space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <h1 className="text-3xl font-bold">{gameData.name} - Overview</h1>
-          <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+          <div className="flex flex-wrap justify-center gap-2 md:justify-end">
             <Button variant="outline" onClick={copyGameLink}>
               Copy Game Link
             </Button>
-            <Button onClick={() => router.push(`/games/${gameId}`)}>
-              My Predictions
-            </Button>
+            <Button onClick={() => router.push(`/games/${gameId}`)}>My Predictions</Button>
             {isCreator && (
-              <Button onClick={() => router.push(`/games/${gameId}/manage`)}>
-                Manage Game
-              </Button>
+              <Button onClick={() => router.push(`/games/${gameId}/manage`)}>Manage Game</Button>
             )}
             {user && (
               <Button variant="outline" onClick={() => router.push('/dashboard')}>
@@ -156,28 +162,36 @@ export default function GameOverviewPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <p className="text-sm text-gray-600 mb-4">
-                  Lower scores are better!
-                </p>
+                <p className="mb-4 text-sm text-gray-600">Lower scores are better!</p>
                 {leaderboard.map((participant, index) => {
-                  const numericalQuestions = participant.questionScores.filter(q => q.isNumerical);
+                  const numericalQuestions = participant.questionScores.filter(
+                    (q) => q.isNumerical
+                  );
                   return (
-                    <div 
-                      key={participant.userId} 
-                      className={`flex items-center justify-between p-3 rounded-lg border ${
-                        index === 0 ? 'bg-yellow-50 border-yellow-200' : 
-                        index === 1 ? 'bg-gray-50 border-gray-200' : 
-                        index === 2 ? 'bg-orange-50 border-orange-200' : 
-                        'bg-white border-gray-100'
+                    <div
+                      key={participant.userId}
+                      className={`flex items-center justify-between rounded-lg border p-3 ${
+                        index === 0
+                          ? 'border-yellow-200 bg-yellow-50'
+                          : index === 1
+                            ? 'border-gray-200 bg-gray-50'
+                            : index === 2
+                              ? 'border-orange-200 bg-orange-50'
+                              : 'border-gray-100 bg-white'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                          index === 0 ? 'bg-yellow-500 text-white' :
-                          index === 1 ? 'bg-gray-400 text-white' :
-                          index === 2 ? 'bg-orange-500 text-white' :
-                          'bg-gray-200 text-gray-600'
-                        }`}>
+                        <div
+                          className={`flex h-8 w-8 items-center justify-center rounded-full font-bold ${
+                            index === 0
+                              ? 'bg-yellow-500 text-white'
+                              : index === 1
+                                ? 'bg-gray-400 text-white'
+                                : index === 2
+                                  ? 'bg-orange-500 text-white'
+                                  : 'bg-gray-200 text-gray-600'
+                          }`}
+                        >
                           {index + 1}
                         </div>
                         <div>
@@ -186,14 +200,13 @@ export default function GameOverviewPage() {
                             {user && participant.userId === user.id && ' (You)'}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {numericalQuestions.length} numerical prediction{numericalQuestions.length !== 1 ? 's' : ''}
+                            {numericalQuestions.length} numerical prediction
+                            {numericalQuestions.length !== 1 ? 's' : ''}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-lg">
-                          {participant.totalScore.toFixed(2)}
-                        </div>
+                        <div className="text-lg font-bold">{participant.totalScore.toFixed(2)}</div>
                         {/* <div className="text-xs text-gray-500">total difference</div> */}
                       </div>
                     </div>
@@ -209,7 +222,7 @@ export default function GameOverviewPage() {
             <CardTitle>
               Predictions & Results
               {hasPublishedQuestions && (
-                <span className="text-sm font-normal text-green-600 ml-2">
+                <span className="ml-2 text-sm font-normal text-green-600">
                   ({gameData.publishedQuestions?.length || 0} question(s) published)
                 </span>
               )}
@@ -217,12 +230,12 @@ export default function GameOverviewPage() {
           </CardHeader>
           <CardContent>
             {!canSeeResults ? (
-              <div className="text-center py-8">
+              <div className="py-8 text-center">
                 <p className="text-gray-500">
-                  The game creator hasn&apos;t published any results yet. 
-                  You&apos;ll be able to see predictions and results once they&apos;re published.
+                  The game creator hasn&apos;t published any results yet. You&apos;ll be able to see
+                  predictions and results once they&apos;re published.
                 </p>
-                <p className="text-sm text-gray-400 mt-2">
+                <p className="mt-2 text-sm text-gray-400">
                   You can still view and edit your own predictions.
                 </p>
               </div>
@@ -231,14 +244,16 @@ export default function GameOverviewPage() {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left p-4 font-medium">Participant</th>
+                      <th className="p-4 text-left font-medium">Participant</th>
                       {gameData.questions.map((question, index) => {
                         const isPublished = gameData.publishedQuestions.includes(question.text);
                         return (
-                          <th key={index} className="text-left p-4 font-medium">
+                          <th key={index} className="p-4 text-left font-medium">
                             {question.text}
                             {isPublished && <span className="ml-1 text-green-600">🔓</span>}
-                            {!isPublished && !isCreator && <span className="ml-1 text-gray-400">🔒</span>}
+                            {!isPublished && !isCreator && (
+                              <span className="ml-1 text-gray-400">🔒</span>
+                            )}
                           </th>
                         );
                       })}
@@ -253,11 +268,11 @@ export default function GameOverviewPage() {
                         </td>
                         {gameData.questions.map((question, qIndex) => {
                           const prediction = participant.predictions.find(
-                            p => p.question === question.text
+                            (p) => p.question === question.text
                           );
                           const isPublished = gameData.publishedQuestions.includes(question.text);
                           const canSeeThisQuestion = isCreator || isPublished;
-                          
+
                           return (
                             <td key={qIndex} className="p-4">
                               {canSeeThisQuestion ? (
@@ -279,15 +294,17 @@ export default function GameOverviewPage() {
                         {gameData.questions.map((question, qIndex) => {
                           const isPublished = gameData.publishedQuestions.includes(question.text);
                           let actualValue = '';
-                          
+
                           if (isPublished && gameData.actualResults) {
                             // Use question ID as the key in actualResults
                             actualValue = gameData.actualResults[question.id] || '-';
                           }
-                          
+
                           return (
                             <td key={qIndex} className="p-4">
-                              {isPublished ? actualValue || '-' : (
+                              {isPublished ? (
+                                actualValue || '-'
+                              ) : (
                                 <span className="text-gray-400 italic">Not published</span>
                               )}
                             </td>
@@ -302,12 +319,12 @@ export default function GameOverviewPage() {
           </CardContent>
         </Card>
 
-        
-
         {gameData.participants.length === 0 && (
           <Card>
-            <CardContent className="text-center py-8">
-              <p className="text-gray-500">No participants yet. Share the game link to get started!</p>
+            <CardContent className="py-8 text-center">
+              <p className="text-gray-500">
+                No participants yet. Share the game link to get started!
+              </p>
             </CardContent>
           </Card>
         )}

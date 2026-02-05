@@ -9,7 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
   try {
     // Get the game directly from database
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null,
       },
@@ -19,8 +19,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
       return NextResponse.json({ error: 'Game not found' }, { status: 404 });
     }
 
-    const gameWithFields = game as { id: string; name: string; publishedQuestions: unknown; actualResults: unknown; status: string };
-    
+    const gameWithFields = game as {
+      id: string;
+      name: string;
+      publishedQuestions: unknown;
+      actualResults: unknown;
+      status: string;
+    };
+
     return NextResponse.json({
       gameId: game.id,
       gameName: game.name,
@@ -29,13 +35,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
       isArray: Array.isArray(gameWithFields.publishedQuestions),
       actualResults: gameWithFields.actualResults,
       actualResultsType: typeof gameWithFields.actualResults,
-      actualResultsKeys: gameWithFields.actualResults ? Object.keys(gameWithFields.actualResults) : null,
+      actualResultsKeys: gameWithFields.actualResults
+        ? Object.keys(gameWithFields.actualResults)
+        : null,
       status: gameWithFields.status,
       debug: {
         allFields: Object.keys(game),
         publishedQuestionsValue: gameWithFields.publishedQuestions,
         actualResultsValue: gameWithFields.actualResults,
-      }
+      },
     });
   } catch (error) {
     console.error('Error in debug endpoint:', error);

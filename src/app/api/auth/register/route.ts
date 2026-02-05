@@ -12,7 +12,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (password.length < 6) {
-    return NextResponse.json({ error: 'Password must be at least 6 characters long' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Password must be at least 6 characters long' },
+      { status: 400 }
+    );
   }
 
   try {
@@ -28,7 +31,7 @@ export async function POST(req: NextRequest) {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user
+    // Create user
     const user = await prisma.user.create({
       data: {
         email,
@@ -38,7 +41,15 @@ export async function POST(req: NextRequest) {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _password, ...userWithoutPassword } = user as { id: string; email: string; password: string; name: string | null; role: string; createdAt: Date; updatedAt: Date };
+    const { password: _password, ...userWithoutPassword } = user as {
+      id: string;
+      email: string;
+      password: string;
+      name: string | null;
+      role: string;
+      createdAt: Date;
+      updatedAt: Date;
+    };
     return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error) {
     console.error('Registration error:', error);

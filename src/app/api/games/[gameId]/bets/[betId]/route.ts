@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const prisma = new PrismaClient();
 
 export async function PATCH(
-  req: NextRequest, 
+  req: NextRequest,
   { params }: { params: Promise<{ gameId: string; betId: string }> }
 ) {
   const { betId } = await params;
@@ -16,9 +16,7 @@ export async function PATCH(
 
   try {
     // Check if this bet belongs to the current user/username for this game
-    const whereClause = userId 
-      ? { id: betId, userId: userId }
-      : { id: betId, username: username };
+    const whereClause = userId ? { id: betId, userId: userId } : { id: betId, username: username };
 
     const existingBet = await prisma.bet.findFirst({
       where: whereClause,
@@ -34,21 +32,26 @@ export async function PATCH(
     // Check if this question has been published (locked from editing)
     const gameWithFields = existingBet.game as { id: string; publishedQuestions: unknown };
     const publishedQuestions = gameWithFields.publishedQuestions;
-    
+
     if (publishedQuestions) {
       let publishedArray: string[] = [];
       try {
-        publishedArray = typeof publishedQuestions === 'string' 
-          ? JSON.parse(publishedQuestions)
-          : publishedQuestions as string[];
+        publishedArray =
+          typeof publishedQuestions === 'string'
+            ? JSON.parse(publishedQuestions)
+            : (publishedQuestions as string[]);
       } catch {
         publishedArray = Array.isArray(publishedQuestions) ? publishedQuestions : [];
       }
-      
+
       if (publishedArray.includes(existingBet.question)) {
-        return NextResponse.json({ 
-          error: 'This question has been locked. Results have been published and predictions can no longer be changed.' 
-        }, { status: 403 });
+        return NextResponse.json(
+          {
+            error:
+              'This question has been locked. Results have been published and predictions can no longer be changed.',
+          },
+          { status: 403 }
+        );
       }
     }
 

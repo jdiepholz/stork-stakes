@@ -26,7 +26,7 @@ export default function DashboardPage() {
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
     const userName = localStorage.getItem('userName');
-    
+
     if (!userId || !userEmail) {
       router.push('/auth');
       return;
@@ -37,10 +37,10 @@ export default function DashboardPage() {
     // Fetch user's games
     fetch('/api/users/me/games', {
       headers: {
-        'Authorization': userId,
+        Authorization: userId,
       },
     })
-      .then(res => {
+      .then((res) => {
         if (res.status === 401 || res.status === 404) {
           // Invalid user, clear localStorage and redirect to login
           localStorage.removeItem('userId');
@@ -87,7 +87,7 @@ export default function DashboardPage() {
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-4xl space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Create New Game */}
           <Card>
             <CardHeader>
@@ -133,39 +133,33 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>My Games</CardTitle>
-              <CardDescription>
-                Games you&apos;ve created or participated in.
-              </CardDescription>
+              <CardDescription>Games you&apos;ve created or participated in.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {myGames.map((game) => (
-                  <div key={game.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg gap-4">
+                  <div
+                    key={game.id}
+                    className="flex flex-col justify-between gap-4 rounded-lg border p-4 md:flex-row md:items-center"
+                  >
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-medium">{game.name}</h3>
-                        <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                        <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
                           {game.isOwner ? 'Creator' : 'Participant'}
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         Created: {new Date(game.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="space-x-2">
                       {game.isOwner && (
                         <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => copyGameLink(game.id)}
-                          >
+                          <Button variant="outline" size="sm" onClick={() => copyGameLink(game.id)}>
                             Share Link
                           </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => router.push(`/games/${game.id}/manage`)}
-                          >
+                          <Button size="sm" onClick={() => router.push(`/games/${game.id}/manage`)}>
                             Manage Game
                           </Button>
                         </>
@@ -179,10 +173,7 @@ export default function DashboardPage() {
                           >
                             Game Overview
                           </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => router.push(`/games/${game.id}`)}
-                          >
+                          <Button size="sm" onClick={() => router.push(`/games/${game.id}`)}>
                             My Predictions
                           </Button>
                         </>

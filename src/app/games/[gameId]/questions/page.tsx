@@ -35,7 +35,7 @@ export default function EditQuestionsPage() {
     // Check if user is authenticated
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
-    
+
     if (!userId || !userEmail) {
       router.push(`/auth?redirect=/games/${gameId}/questions`);
       return;
@@ -49,7 +49,7 @@ export default function EditQuestionsPage() {
       // Fetch game data and questions
       fetch(`/api/games/${gameId}/manage`, {
         headers: {
-          'Authorization': user.id,
+          Authorization: user.id,
         },
       })
         .then((res) => {
@@ -97,11 +97,12 @@ export default function EditQuestionsPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold">Edit Game Questions</h1>
           <p className="text-muted-foreground mt-2">
-            Modify the questions for &quot;{gameData.name}&quot;. You can reorder, delete, or add custom questions.
+            Modify the questions for &quot;{gameData.name}&quot;. You can reorder, delete, or add
+            custom questions.
           </p>
         </div>
-        
-        <GameQuestionsSetup 
+
+        <GameQuestionsSetup
           gameId={gameId}
           userId={user.id}
           onComplete={handleQuestionsComplete}

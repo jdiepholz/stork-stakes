@@ -4,16 +4,13 @@ import { getAllQuestionsForGame } from '@/lib/questions';
 
 const prisma = new PrismaClient();
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ gameId: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ gameId: string }> }) {
   try {
     const { gameId } = await params;
 
     // Get the game overview (excluding soft-deleted)
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null, // Only non-deleted games
       },
@@ -25,11 +22,11 @@ export async function GET(
                 id: true,
                 name: true,
                 email: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!game) {
@@ -46,40 +43,42 @@ export async function GET(
     // }); // Unused for now
 
     // Format the response to match the frontend expectations
-    
+
     // Group bets by user (excluding the game creator)
     const participantMap = new Map();
-    game.bets?.forEach((bet: { 
-      userId: string | null; 
-      username: string | null;
-      question: string; 
-      answer: string | null; 
-      user: { id: string; email: string; name: string | null } | null 
-    }) => {
-      const userId = bet.userId;
-      const username = bet.username;
-      
-      // Skip bets from the game creator (only registered users can be creators)
-      if (userId === game.createdBy) {
-        return;
-      }
-      
-      // Create a unique key for each participant
-      const participantKey = userId || `anonymous_${username}`;
-      
-      if (!participantMap.has(participantKey)) {
-        participantMap.set(participantKey, {
-          userId: userId || participantKey,
-          userEmail: bet.user?.email || username || 'Anonymous',
-          userName: bet.user?.name || username,
-          predictions: []
+    game.bets?.forEach(
+      (bet: {
+        userId: string | null;
+        username: string | null;
+        question: string;
+        answer: string | null;
+        user: { id: string; email: string; name: string | null } | null;
+      }) => {
+        const userId = bet.userId;
+        const username = bet.username;
+
+        // Skip bets from the game creator (only registered users can be creators)
+        if (userId === game.createdBy) {
+          return;
+        }
+
+        // Create a unique key for each participant
+        const participantKey = userId || `anonymous_${username}`;
+
+        if (!participantMap.has(participantKey)) {
+          participantMap.set(participantKey, {
+            userId: userId || participantKey,
+            userEmail: bet.user?.email || username || 'Anonymous',
+            userName: bet.user?.name || username,
+            predictions: [],
+          });
+        }
+        participantMap.get(participantKey).predictions.push({
+          question: bet.question,
+          answer: bet.answer,
         });
       }
-      participantMap.get(participantKey).predictions.push({
-        question: bet.question,
-        answer: bet.answer
-      });
-    });
+    );
 
     const gameOverview = {
       id: game.id,
@@ -92,12 +91,13 @@ export async function GET(
         let publishedQuestions: string[] = [];
         if (gameWithFields.publishedQuestions) {
           try {
-            publishedQuestions = typeof gameWithFields.publishedQuestions === 'string' 
-              ? JSON.parse(gameWithFields.publishedQuestions)
-              : gameWithFields.publishedQuestions as string[];
+            publishedQuestions =
+              typeof gameWithFields.publishedQuestions === 'string'
+                ? JSON.parse(gameWithFields.publishedQuestions)
+                : (gameWithFields.publishedQuestions as string[]);
           } catch {
-            publishedQuestions = Array.isArray(gameWithFields.publishedQuestions) 
-              ? gameWithFields.publishedQuestions 
+            publishedQuestions = Array.isArray(gameWithFields.publishedQuestions)
+              ? gameWithFields.publishedQuestions
               : [];
           }
         }
@@ -110,9 +110,6 @@ export async function GET(
     return NextResponse.json(gameOverview);
   } catch (error) {
     console.error('Error fetching game overview:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch game overview' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch game overview' }, { status: 500 });
   }
 }

@@ -26,9 +26,9 @@ export async function GET(
       orderBy: { order: 'asc' },
       include: {
         creator: {
-          select: { id: true, email: true, name: true }
-        }
-      }
+          select: { id: true, email: true, name: true },
+        },
+      },
     });
 
     return NextResponse.json({ questions: customQuestions });
@@ -45,7 +45,15 @@ export async function POST(
 ) {
   try {
     const { gameId } = await params;
-    const { text, type = 'TEXT', placeholder, options, createdBy, isDefault = false, order } = await request.json();
+    const {
+      text,
+      type = 'TEXT',
+      placeholder,
+      options,
+      createdBy,
+      isDefault = false,
+      order,
+    } = await request.json();
 
     if (!text || !createdBy) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -66,7 +74,7 @@ export async function POST(
       const maxOrder = await prisma.question.findFirst({
         where: { gameId },
         orderBy: { order: 'desc' },
-        select: { order: true }
+        select: { order: true },
       });
       finalOrder = (maxOrder?.order || 0) + 1;
     }
@@ -81,13 +89,13 @@ export async function POST(
         gameId,
         createdBy,
         order: finalOrder,
-        isDefault: isDefault
+        isDefault: isDefault,
       },
       include: {
         creator: {
-          select: { id: true, email: true, name: true }
-        }
-      }
+          select: { id: true, email: true, name: true },
+        },
+      },
     });
 
     return NextResponse.json(question, { status: 201 });
@@ -119,7 +127,7 @@ export async function DELETE(
 
     // Delete all questions for this game
     await prisma.question.deleteMany({
-      where: { gameId }
+      where: { gameId },
     });
 
     return NextResponse.json({ message: 'All questions deleted successfully' });

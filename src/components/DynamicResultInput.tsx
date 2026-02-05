@@ -20,7 +20,12 @@ interface DynamicResultInputProps {
   hideLabel?: boolean;
 }
 
-export default function DynamicResultInput({ question, value, onChange, hideLabel = false }: DynamicResultInputProps) {
+export default function DynamicResultInput({
+  question,
+  value,
+  onChange,
+  hideLabel = false,
+}: DynamicResultInputProps) {
   const { text, type, placeholder, options } = question;
 
   const renderInput = () => {
@@ -62,12 +67,16 @@ export default function DynamicResultInput({ question, value, onChange, hideLabe
             id={`result-${text}`}
             value={value}
             onChange={(e) => onChange(text, e.target.value, type)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
             <option value="">Select...</option>
-            {options && Array.isArray(options) && options.map((option: string) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
+            {options &&
+              Array.isArray(options) &&
+              options.map((option: string) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
           </select>
         );
 
@@ -79,7 +88,7 @@ export default function DynamicResultInput({ question, value, onChange, hideLabe
               type="color"
               value={value || '#000000'}
               onChange={(e) => onChange(text, e.target.value, type)}
-              className="w-16 h-10 p-1 border border-gray-300 rounded-md cursor-pointer"
+              className="h-10 w-16 cursor-pointer rounded-md border border-gray-300 p-1"
             />
           </div>
         );

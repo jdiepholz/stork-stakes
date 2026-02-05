@@ -42,8 +42,8 @@ export async function GET(req: NextRequest) {
 
     // Combine and mark which games are owned vs participated
     const allGames = [
-      ...createdGames.map(game => ({ ...game, isOwner: true })),
-      ...participatedGames.map(game => ({ ...game, isOwner: false })),
+      ...createdGames.map((game) => ({ ...game, isOwner: true })),
+      ...participatedGames.map((game) => ({ ...game, isOwner: false })),
     ];
 
     return NextResponse.json(allGames);

@@ -23,68 +23,71 @@ export interface Question {
 
 export const defaultQuestions = [
   {
-    text: 'Baby\'s Weight (in g)',
+    text: "Baby's Weight (in g)",
     type: 'NUMBER',
     placeholder: 'e.g., 3200',
-    options: null
+    options: null,
   },
   {
-    text: 'Baby\'s Length (in cm)',
-    type: 'NUMBER', 
+    text: "Baby's Length (in cm)",
+    type: 'NUMBER',
     placeholder: 'e.g., 50',
-    options: null
+    options: null,
   },
   {
     text: 'Birth Date',
     type: 'DATE',
     placeholder: null,
-    options: null
+    options: null,
   },
   {
     text: 'Sex of the Baby',
     type: 'SELECT',
     placeholder: null,
-    options: ['Boy', 'Girl', 'Diverse']
+    options: ['Boy', 'Girl', 'Diverse'],
   },
   {
     text: 'How many diapers in the first week?',
     type: 'NUMBER',
     placeholder: 'e.g., 70',
-    options: null
+    options: null,
   },
   {
     text: 'How many photos in the first 24h?',
     type: 'NUMBER',
     placeholder: 'e.g., 150',
-    options: null
+    options: null,
   },
   {
     text: 'The Scrabble value of the first name?',
     type: 'NUMBER',
     placeholder: 'e.g., 25',
-    options: null
+    options: null,
   },
   {
     text: 'How many names?',
     type: 'NUMBER',
     placeholder: 'e.g., 2',
-    options: null
+    options: null,
   },
   {
     text: 'Hair color?',
     type: 'COLORPICKER',
     placeholder: null,
-    options: null
+    options: null,
   },
   {
     text: 'Time of birth',
     type: 'TIME',
     placeholder: null,
-    options: null
-  }
+    options: null,
+  },
 ];
 
-export async function initializeDefaultQuestions(gameId: string, createdBy: string): Promise<Question[]> {
+export async function initializeDefaultQuestions(
+  gameId: string,
+  createdBy: string
+): Promise<Question[]> {
   const questionPromises = defaultQuestions.map((questionData, index) => {
     return prisma.question.create({
       data: {
@@ -95,13 +98,13 @@ export async function initializeDefaultQuestions(gameId: string, createdBy: stri
         gameId,
         createdBy,
         order: index + 1,
-        isDefault: true
+        isDefault: true,
       },
       include: {
         creator: {
-          select: { id: true, email: true, name: true }
-        }
-      }
+          select: { id: true, email: true, name: true },
+        },
+      },
     });
   });
 
@@ -114,8 +117,8 @@ export async function getAllQuestionsForGame(gameId: string): Promise<Question[]
     orderBy: { order: 'asc' },
     include: {
       creator: {
-        select: { id: true, email: true, name: true }
-      }
-    }
+        select: { id: true, email: true, name: true },
+      },
+    },
   }) as Promise<Question[]>;
 }

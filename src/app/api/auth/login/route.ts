@@ -21,7 +21,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Check password
-    const userWithPassword = user as { id: string; email: string; password: string; name: string | null; role: string; createdAt: Date; updatedAt: Date };
+    const userWithPassword = user as {
+      id: string;
+      email: string;
+      password: string;
+      name: string | null;
+      role: string;
+      createdAt: Date;
+      updatedAt: Date;
+    };
     const isPasswordValid = await bcrypt.compare(password, userWithPassword.password);
 
     if (!isPasswordValid) {

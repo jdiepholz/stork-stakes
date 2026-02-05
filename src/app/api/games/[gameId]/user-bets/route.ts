@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
   try {
     // Check if the game exists and is not soft-deleted
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null,
       },
@@ -47,12 +47,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     let publishedQuestions: string[] = [];
     if (gameWithFields.publishedQuestions) {
       try {
-        publishedQuestions = typeof gameWithFields.publishedQuestions === 'string' 
-          ? JSON.parse(gameWithFields.publishedQuestions)
-          : gameWithFields.publishedQuestions as string[];
+        publishedQuestions =
+          typeof gameWithFields.publishedQuestions === 'string'
+            ? JSON.parse(gameWithFields.publishedQuestions)
+            : (gameWithFields.publishedQuestions as string[]);
       } catch {
-        publishedQuestions = Array.isArray(gameWithFields.publishedQuestions) 
-          ? gameWithFields.publishedQuestions 
+        publishedQuestions = Array.isArray(gameWithFields.publishedQuestions)
+          ? gameWithFields.publishedQuestions
           : [];
       }
     }
@@ -66,9 +67,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
     const questions: Question[] = await getAllQuestionsForGame(gameId);
 
     // Check if user already has bets for this game
-    const whereClause = userId 
-      ? { gameId, userId }
-      : { gameId, username };
+    const whereClause = userId ? { gameId, userId } : { gameId, username };
 
     const existingBets: Bet[] = await prisma.bet.findMany({
       where: whereClause,
@@ -82,14 +81,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
           ...bet,
           questionType: question?.type || 'TEXT',
           questionOptions: question?.options || null,
-          questionPlaceholder: question?.placeholder || undefined
+          questionPlaceholder: question?.placeholder || undefined,
         };
       });
-      return NextResponse.json({ isCreator: false, bets: betsWithQuestionInfo, publishedQuestions, questions });
+      return NextResponse.json({
+        isCreator: false,
+        bets: betsWithQuestionInfo,
+        publishedQuestions,
+        questions,
+      });
     }
 
     // Create bets for all questions in the game
-    const createData = userId 
+    const createData = userId
       ? questions.map((question: Question) => ({
           question: question.text,
           gameId,
@@ -101,9 +105,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
           username,
         }));
 
-    const bets: Bet[] = await Promise.all(
-      createData.map((data) => prisma.bet.create({ data }))
-    );
+    const bets: Bet[] = await Promise.all(createData.map((data) => prisma.bet.create({ data })));
 
     // Add question type info to the bets
     const betsWithQuestionInfo: BetWithQuestionInfo[] = bets.map((bet: Bet) => {
@@ -112,11 +114,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
         ...bet,
         questionType: question?.type || 'TEXT',
         questionOptions: question?.options || null,
-        questionPlaceholder: question?.placeholder || undefined
+        questionPlaceholder: question?.placeholder || undefined,
       };
     });
 
-    return NextResponse.json({ isCreator: false, bets: betsWithQuestionInfo, publishedQuestions, questions });
+    return NextResponse.json({
+      isCreator: false,
+      bets: betsWithQuestionInfo,
+      publishedQuestions,
+      questions,
+    });
   } catch (error) {
     console.error('Error creating user bets:', error);
     return NextResponse.json({ error: 'Error creating bets' }, { status: 500 });

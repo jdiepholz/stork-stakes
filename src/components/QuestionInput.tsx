@@ -24,7 +24,8 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
     const cleanValue = inputValue.replace(/[^0-9,.]/, '');
     const normalizedValue = cleanValue.replace(',', '.');
     const parts = normalizedValue.split('.');
-    const validValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : normalizedValue;
+    const validValue =
+      parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : normalizedValue;
     onChange(betId, validValue);
   };
 
@@ -100,16 +101,18 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${baseClassName}`}
+              className={`border-input bg-background text-foreground focus:ring-ring w-full rounded-md border px-3 py-2 focus:border-transparent focus:ring-2 focus:outline-none ${baseClassName}`}
             >
               <option value="">Select...</option>
               {bet.questionOptions.map((option: string, index: number) => (
-                <option key={index} value={option}>{option}</option>
+                <option key={index} value={option}>
+                  {option}
+                </option>
               ))}
             </select>
           );
         }
-        
+
         // Fallback for legacy questions without proper options
         if (bet.question === 'Sex of the Baby') {
           return (
@@ -118,7 +121,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${baseClassName}`}
+              className={`border-input bg-background text-foreground focus:ring-ring w-full rounded-md border px-3 py-2 focus:border-transparent focus:ring-2 focus:outline-none ${baseClassName}`}
             >
               <option value="">Select...</option>
               <option value="Boy">Boy</option>
@@ -134,7 +137,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${baseClassName}`}
+              className={`border-input bg-background text-foreground focus:ring-ring w-full rounded-md border px-3 py-2 focus:border-transparent focus:ring-2 focus:outline-none ${baseClassName}`}
             >
               <option value="">Select...</option>
             </select>
@@ -150,7 +153,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               value={value || '#000000'}
               onChange={(e) => onChange(bet.id, e.target.value)}
               disabled={isLocked}
-              className={`w-16 h-10 p-1 border border-input rounded-md cursor-pointer ${baseClassName}`}
+              className={`border-input h-10 w-16 cursor-pointer rounded-md border p-1 ${baseClassName}`}
             />
           </div>
         );
@@ -171,11 +174,11 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex-1 min-w-0">
-        <Label htmlFor={bet.id} className="block font-medium flex items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <Label htmlFor={bet.id} className="block flex items-center gap-2 font-medium">
           {isLocked && (
-            <span 
-              className="text-red-600 font-semibold cursor-help" 
+            <span
+              className="cursor-help font-semibold text-red-600"
               title="This question has been locked. Results have been published and predictions can no longer be changed."
             >
               🔒
@@ -184,9 +187,7 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
           {bet.question}
         </Label>
       </div>
-      <div className="w-48 flex-shrink-0">
-        {renderInput()}
-      </div>
+      <div className="w-48 flex-shrink-0">{renderInput()}</div>
     </div>
   );
 }

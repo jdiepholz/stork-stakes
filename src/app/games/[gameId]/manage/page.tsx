@@ -5,7 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { calculateParticipantScores, getLeaderboard } from '@/lib/scoring';
 import DynamicResultInput from '@/components/DynamicResultInput';
@@ -45,27 +52,32 @@ export default function ManageGamePage() {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [actualResults, setActualResults] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  
+
   // Dialog states
   const [deleteDialog, setDeleteDialog] = useState({ open: false });
-  const [publishDialog, setPublishDialog] = useState({ open: false, question: '', questions: [] as string[] });
+  const [publishDialog, setPublishDialog] = useState({
+    open: false,
+    question: '',
+    questions: [] as string[],
+  });
   const [missingResultDialog, setMissingResultDialog] = useState({ open: false, question: '' });
 
   // Generic input handlers
   const handleResultChange = (questionText: string, value: string, questionType: string) => {
     // Find the question object to get the ID
-    const question = gameData?.questions.find(q => q.text === questionText);
+    const question = gameData?.questions.find((q) => q.text === questionText);
     if (!question) return;
-    
+
     if (questionType === 'NUMBER') {
       // Only allow positive numbers
       const cleanValue = value.replace(/[^0-9,.]/, '');
       const normalizedValue = cleanValue.replace(',', '.');
       const parts = normalizedValue.split('.');
-      const validValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : normalizedValue;
-      setActualResults(prev => ({ ...prev, [question.id]: validValue }));
+      const validValue =
+        parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : normalizedValue;
+      setActualResults((prev) => ({ ...prev, [question.id]: validValue }));
     } else {
-      setActualResults(prev => ({ ...prev, [question.id]: value }));
+      setActualResults((prev) => ({ ...prev, [question.id]: value }));
     }
   };
 
@@ -73,7 +85,7 @@ export default function ManageGamePage() {
     // Check if user is authenticated
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
-    
+
     if (!userId || !userEmail) {
       router.push(`/auth?redirect=/games/${gameId}/manage`);
       return;
@@ -86,7 +98,7 @@ export default function ManageGamePage() {
     if (gameId && user) {
       fetch(`/api/games/${gameId}/manage`, {
         headers: {
-          'Authorization': user.id,
+          Authorization: user.id,
         },
       })
         .then((res) => {
@@ -159,7 +171,7 @@ export default function ManageGamePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': user.id,
+          Authorization: user.id,
         },
         body: JSON.stringify(allResults),
       });
@@ -181,11 +193,12 @@ export default function ManageGamePage() {
     if (!user || !gameData) return;
 
     // Find the question to get its ID
-    const questionObj = gameData.questions.find(q => q.text === question);
+    const questionObj = gameData.questions.find((q) => q.text === question);
     if (!questionObj) return;
 
     // Check if actual result exists for this question
-    const hasActualResult = actualResults[questionObj.id] && actualResults[questionObj.id].trim() !== '';
+    const hasActualResult =
+      actualResults[questionObj.id] && actualResults[questionObj.id].trim() !== '';
 
     if (!hasActualResult) {
       setMissingResultDialog({ open: true, question });
@@ -199,7 +212,7 @@ export default function ManageGamePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': user.id,
+          Authorization: user.id,
         },
         body: JSON.stringify(allResults),
       });
@@ -225,7 +238,7 @@ export default function ManageGamePage() {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': user.id,
+          Authorization: user.id,
         },
         body: JSON.stringify({ questions: [question] }),
       });
@@ -255,8 +268,9 @@ export default function ManageGamePage() {
     if (!user || !gameData) return;
 
     // Find all questions that have results but are not published
-    const readyToPublish = gameData.questions.filter(question => {
-      const hasActualResult = actualResults[question.id] && actualResults[question.id].trim() !== '';
+    const readyToPublish = gameData.questions.filter((question) => {
+      const hasActualResult =
+        actualResults[question.id] && actualResults[question.id].trim() !== '';
       const isNotPublished = !gameData.publishedQuestions.includes(question.text);
       return hasActualResult && isNotPublished;
     });
@@ -272,7 +286,7 @@ export default function ManageGamePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': user.id,
+          Authorization: user.id,
         },
         body: JSON.stringify(actualResults),
       });
@@ -283,12 +297,12 @@ export default function ManageGamePage() {
       }
 
       // Then publish all ready questions
-      const questionsToPublish = readyToPublish.map(q => q.text);
+      const questionsToPublish = readyToPublish.map((q) => q.text);
       const publishResponse = await fetch(`/api/games/${gameId}/publish-questions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': user.id,
+          Authorization: user.id,
         },
         body: JSON.stringify({ questions: questionsToPublish }),
       });
@@ -323,7 +337,7 @@ export default function ManageGamePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': user!.id,
+          Authorization: user!.id,
         },
         body: JSON.stringify({ questions: [questionToPublish] }),
       });
@@ -354,7 +368,7 @@ export default function ManageGamePage() {
       const response = await fetch(`/api/games/${gameId}/delete`, {
         method: 'DELETE',
         headers: {
-          'Authorization': user!.id,
+          Authorization: user!.id,
         },
       });
 
@@ -384,22 +398,23 @@ export default function ManageGamePage() {
   }
 
   // Calculate scores for published questions
-  const participantScores = gameData.actualResults && gameData.publishedQuestions.length > 0
-    ? calculateParticipantScores(
-        gameData.participants, 
-        gameData.actualResults, 
-        gameData.questions.filter(q => gameData.publishedQuestions.includes(q.text))
-      )
-    : [];
+  const participantScores =
+    gameData.actualResults && gameData.publishedQuestions.length > 0
+      ? calculateParticipantScores(
+          gameData.participants,
+          gameData.actualResults,
+          gameData.questions.filter((q) => gameData.publishedQuestions.includes(q.text))
+        )
+      : [];
   const leaderboard = getLeaderboard(participantScores);
   const hasNumericalScoring = leaderboard.length > 0;
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="w-full max-w-6xl space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <h1 className="text-3xl font-bold">Manage: {gameData.name}</h1>
-          <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+          <div className="flex flex-wrap justify-center gap-2 md:justify-end">
             <Button variant="outline" onClick={() => router.push(`/games/${gameId}/questions`)}>
               ✏️ Edit Questions
             </Button>
@@ -419,10 +434,21 @@ export default function ManageGamePage() {
         <Card>
           <CardContent className="py-4">
             <div className="flex flex-wrap gap-4 text-sm">
-              <div><strong>Status:</strong> {gameData.status === 'RESULTS_PUBLISHED' ? 'Results Published' : 'Active'}</div>
-              <div><strong>Participants:</strong> {gameData.participants.length}</div>
-              <div><strong>Published:</strong> {gameData.publishedQuestions?.length || 0} of {gameData.questions?.length || 0} questions</div>
-              <div><strong>ID:</strong> <code className="bg-muted px-2 py-1 rounded text-xs">{gameData.id}</code></div>
+              <div>
+                <strong>Status:</strong>{' '}
+                {gameData.status === 'RESULTS_PUBLISHED' ? 'Results Published' : 'Active'}
+              </div>
+              <div>
+                <strong>Participants:</strong> {gameData.participants.length}
+              </div>
+              <div>
+                <strong>Published:</strong> {gameData.publishedQuestions?.length || 0} of{' '}
+                {gameData.questions?.length || 0} questions
+              </div>
+              <div>
+                <strong>ID:</strong>{' '}
+                <code className="bg-muted rounded px-2 py-1 text-xs">{gameData.id}</code>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -434,16 +460,21 @@ export default function ManageGamePage() {
               <div>
                 <CardTitle>Question Results & Publishing</CardTitle>
                 <CardDescription>
-                  Enter actual results and publish questions all in one place. Questions turn green when ready to publish.
+                  Enter actual results and publish questions all in one place. Questions turn green
+                  when ready to publish.
                 </CardDescription>
               </div>
               <Button
                 onClick={handlePublishAllReady}
                 className="ml-4"
-                disabled={!gameData.questions.some(q => 
-                  actualResults[q.id] && actualResults[q.id].trim() !== '' && 
-                  !gameData.publishedQuestions.includes(q.text)
-                )}
+                disabled={
+                  !gameData.questions.some(
+                    (q) =>
+                      actualResults[q.id] &&
+                      actualResults[q.id].trim() !== '' &&
+                      !gameData.publishedQuestions.includes(q.text)
+                  )
+                }
               >
                 🚀 Publish All Ready
               </Button>
@@ -455,26 +486,32 @@ export default function ManageGamePage() {
               <div className="space-y-3">
                 {gameData.questions.map((question) => {
                   const isPublished = gameData.publishedQuestions.includes(question.text);
-                  const hasActualResult = actualResults[question.id] && actualResults[question.id].trim() !== '';
-                  
+                  const hasActualResult =
+                    actualResults[question.id] && actualResults[question.id].trim() !== '';
+
                   return (
-                    <div key={question.id} className={`border rounded-lg p-3 ${isPublished ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' : hasActualResult ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800' : 'bg-muted/50 dark:bg-muted/20'}`}>
-                      <div className="flex flex-col md:flex-row md:items-center gap-3">
-                        <div className="flex items-center gap-3 flex-1 min-w-0 w-full">
+                    <div
+                      key={question.id}
+                      className={`rounded-lg border p-3 ${isPublished ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30' : hasActualResult ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30' : 'bg-muted/50 dark:bg-muted/20'}`}
+                    >
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                        <div className="flex w-full min-w-0 flex-1 items-center gap-3">
                           {/* Status Icon */}
-                          <span className="text-lg flex-shrink-0">
+                          <span className="flex-shrink-0 text-lg">
                             {isPublished ? '✅' : hasActualResult ? '🟢' : '⚪'}
                           </span>
 
                           {/* Question Text */}
-                          <div className="flex-1 min-w-0">
-                            <Label className={`font-medium ${isPublished ? 'text-green-700 dark:text-green-400' : ''} block truncate`}>
+                          <div className="min-w-0 flex-1">
+                            <Label
+                              className={`font-medium ${isPublished ? 'text-green-700 dark:text-green-400' : ''} block truncate`}
+                            >
                               {question.text}
                             </Label>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 justify-end w-full md:w-auto">
+                        <div className="flex w-full items-center justify-end gap-2 md:w-auto">
                           {/* Result Input */}
                           <div className="flex-1 md:w-40 md:flex-none">
                             <DynamicResultInput
@@ -486,7 +523,7 @@ export default function ManageGamePage() {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex gap-2 flex-shrink-0">
+                          <div className="flex flex-shrink-0 gap-2">
                             <Button
                               size="sm"
                               variant="outline"
@@ -523,12 +560,15 @@ export default function ManageGamePage() {
               </div>
 
               {/* Success Message */}
-              {(gameData.publishedQuestions?.length || 0) === (gameData.questions?.length || 0) && (gameData.questions?.length || 0) > 0 && (
-                <div className="p-4 bg-green-50 text-green-800 rounded-lg text-center">
-                  <div className="text-lg font-semibold">🎉 All Questions Published!</div>
-                  <p className="text-sm mt-1">All participants can now see the complete results.</p>
-                </div>
-              )}
+              {(gameData.publishedQuestions?.length || 0) === (gameData.questions?.length || 0) &&
+                (gameData.questions?.length || 0) > 0 && (
+                  <div className="rounded-lg bg-green-50 p-4 text-center text-green-800">
+                    <div className="text-lg font-semibold">🎉 All Questions Published!</div>
+                    <p className="mt-1 text-sm">
+                      All participants can now see the complete results.
+                    </p>
+                  </div>
+                )}
             </div>
           </CardContent>
         </Card>
@@ -557,11 +597,13 @@ export default function ManageGamePage() {
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left p-3 font-medium">Participant</th>
+                    <th className="p-3 text-left font-medium">Participant</th>
                     {gameData.questions.map((question, index) => (
-                      <th key={index} className="text-left p-3 font-medium max-w-32">
+                      <th key={index} className="max-w-32 p-3 text-left font-medium">
                         <div className="truncate" title={question.text}>
-                          {question.text.length > 20 ? question.text.substring(0, 17) + '...' : question.text}
+                          {question.text.length > 20
+                            ? question.text.substring(0, 17) + '...'
+                            : question.text}
                         </div>
                       </th>
                     ))}
@@ -575,13 +617,11 @@ export default function ManageGamePage() {
                       </td>
                       {gameData.questions.map((question, qIndex) => {
                         const prediction = participant.predictions.find(
-                          p => p.question === question.text
+                          (p) => p.question === question.text
                         );
                         return (
                           <td key={qIndex} className="p-3">
-                            {prediction?.answer || (
-                              <span className="text-gray-400 italic">-</span>
-                            )}
+                            {prediction?.answer || <span className="text-gray-400 italic">-</span>}
                           </td>
                         );
                       })}
@@ -594,7 +634,9 @@ export default function ManageGamePage() {
                       {gameData.questions.map((question, qIndex) => {
                         const actualValue = actualResults[question.id] || '-';
                         return (
-                          <td key={qIndex} className="p-3">{actualValue}</td>
+                          <td key={qIndex} className="p-3">
+                            {actualValue}
+                          </td>
                         );
                       })}
                     </tr>
@@ -617,7 +659,8 @@ export default function ManageGamePage() {
                   onClick={() => {
                     const breakdown = document.getElementById('score-breakdown');
                     if (breakdown) {
-                      breakdown.style.display = breakdown.style.display === 'none' ? 'block' : 'none';
+                      breakdown.style.display =
+                        breakdown.style.display === 'none' ? 'block' : 'none';
                     }
                   }}
                 >
@@ -628,26 +671,26 @@ export default function ManageGamePage() {
             <CardContent>
               <div className="space-y-4">
                 {/* Compact Leaderboard */}
-                <div className="bg-blue-50 p-3 rounded-lg">
+                <div className="rounded-lg bg-blue-50 p-3">
                   <div className="flex flex-wrap gap-4">
                     {leaderboard.slice(0, 5).map((participant, index) => (
-                      <div 
+                      <div
                         key={participant.userId}
-                        className={`flex items-center gap-2 px-3 py-1 rounded text-sm ${
+                        className={`flex items-center gap-2 rounded px-3 py-1 text-sm ${
                           index === 0 ? 'bg-yellow-200 font-bold' : 'bg-white'
                         }`}
                       >
-                        <span className="w-5 h-5 rounded-full bg-gray-600 text-white text-xs flex items-center justify-center">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-600 text-xs text-white">
                           {index + 1}
                         </span>
-                        <span className="truncate max-w-24">
+                        <span className="max-w-24 truncate">
                           {participant.userName || participant.userEmail}
                         </span>
                         <span className="font-mono">{participant.totalScore.toFixed(2)}</span>
                       </div>
                     ))}
                     {leaderboard.length > 5 && (
-                      <span className="text-gray-500 text-sm self-center">
+                      <span className="self-center text-sm text-gray-500">
                         +{leaderboard.length - 5} more
                       </span>
                     )}
@@ -656,32 +699,34 @@ export default function ManageGamePage() {
 
                 {/* Detailed Breakdown (Initially Hidden) */}
                 <div id="score-breakdown" style={{ display: 'none' }} className="space-y-4">
-                  <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="rounded-lg bg-blue-50 p-3">
                     <p className="text-sm text-blue-800">
-                      <strong>Scoring:</strong> For each question, your score = your_difference ÷ max_difference among all participants. 
-                      Lower total scores are better. Missing answers get the worst score (1.0).
+                      <strong>Scoring:</strong> For each question, your score = your_difference ÷
+                      max_difference among all participants. Lower total scores are better. Missing
+                      answers get the worst score (1.0).
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     {leaderboard.map((participant) => (
-                      <div key={participant.userId} className="border rounded p-3 text-sm">
-                        <div className="font-medium mb-2 flex justify-between">
+                      <div key={participant.userId} className="rounded border p-3 text-sm">
+                        <div className="mb-2 flex justify-between font-medium">
                           <span>{participant.userName || participant.userEmail}</span>
                           <span className="font-bold">{participant.totalScore.toFixed(2)}</span>
                         </div>
                         <div className="space-y-1 text-xs">
                           {participant.questionScores
-                            .filter(q => q.isNumerical)
+                            .filter((q) => q.isNumerical)
                             .map((score, idx) => (
                               <div key={idx} className="flex justify-between font-mono">
-                                <span className="truncate max-w-32" title={score.question}>
-                                  {score.question.length > 25 ? score.question.substring(0, 22) + '...' : score.question}
+                                <span className="max-w-32 truncate" title={score.question}>
+                                  {score.question.length > 25
+                                    ? score.question.substring(0, 22) + '...'
+                                    : score.question}
                                 </span>
                                 <span>{score.score.toFixed(2)}</span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </div>
                       </div>
                     ))}
@@ -699,9 +744,8 @@ export default function ManageGamePage() {
           <DialogHeader>
             <DialogTitle>Delete Game</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{gameData?.name}&quot;? 
-              This will hide the game from all users, but the data will be preserved. 
-              This action cannot be undone.
+              Are you sure you want to delete &quot;{gameData?.name}&quot;? This will hide the game
+              from all users, but the data will be preserved. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -715,32 +759,40 @@ export default function ManageGamePage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={publishDialog.open} onOpenChange={(open) => setPublishDialog({ ...publishDialog, open })}>
+      <Dialog
+        open={publishDialog.open}
+        onOpenChange={(open) => setPublishDialog({ ...publishDialog, open })}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Publish Question</DialogTitle>
             <DialogDescription>
-              Publish &quot;{publishDialog.questions[0] || publishDialog.question}&quot;? This will lock all predictions for this question and show the actual result to participants.
+              Publish &quot;{publishDialog.questions[0] || publishDialog.question}&quot;? This will
+              lock all predictions for this question and show the actual result to participants.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPublishDialog({ open: false, question: '', questions: [] })}>
+            <Button
+              variant="outline"
+              onClick={() => setPublishDialog({ open: false, question: '', questions: [] })}
+            >
               Cancel
             </Button>
-            <Button onClick={confirmQuickPublish}>
-              Publish Question
-            </Button>
+            <Button onClick={confirmQuickPublish}>Publish Question</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={missingResultDialog.open} onOpenChange={(open) => setMissingResultDialog({ ...missingResultDialog, open })}>
+      <Dialog
+        open={missingResultDialog.open}
+        onOpenChange={(open) => setMissingResultDialog({ ...missingResultDialog, open })}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Missing Actual Result</DialogTitle>
             <DialogDescription>
-              Please enter the actual result for &quot;{missingResultDialog.question}&quot; before publishing.
-              You can add the actual results in the form above.
+              Please enter the actual result for &quot;{missingResultDialog.question}&quot; before
+              publishing. You can add the actual results in the form above.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -750,7 +802,6 @@ export default function ManageGamePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </main>
   );
 }

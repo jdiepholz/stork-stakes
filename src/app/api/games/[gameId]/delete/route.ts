@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ gameId: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ gameId: string }> }
+) {
   const { gameId } = await params;
   const userId = req.headers.get('Authorization');
 
@@ -22,7 +25,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ g
     }
 
     if (game.createdBy !== userId) {
-      return NextResponse.json({ error: 'Only the game creator can delete this game' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Only the game creator can delete this game' },
+        { status: 403 }
+      );
     }
 
     // Check if game is already deleted
@@ -39,10 +45,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ g
       },
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Game deleted successfully',
-      deletedAt: deletedGame.updatedAt 
+      deletedAt: deletedGame.updatedAt,
     });
   } catch (error) {
     console.error('Error deleting game:', error);

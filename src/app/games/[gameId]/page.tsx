@@ -40,7 +40,7 @@ export default function GamePage() {
     // Check if user is authenticated
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
-    
+
     if (userId && userEmail) {
       setUser({ id: userId, email: userEmail });
       setIsAnonymous(false);
@@ -65,9 +65,7 @@ export default function GamePage() {
     // 2. Anonymous user has submitted their name (showNameInput is false)
     if (gameId && (user || (isAnonymous && username && !showNameInput))) {
       // Fetch or create bets for this user in this game
-      const requestBody = user 
-        ? { userId: user.id }
-        : { username: username };
+      const requestBody = user ? { userId: user.id } : { username: username };
 
       const headers: HeadersInit = { 'Content-Type': 'application/json' };
       if (user) {
@@ -92,15 +90,15 @@ export default function GamePage() {
         })
         .then((data: GameData | null) => {
           if (!data) return; // Handle the 404 case
-          
+
           if (data.error) {
             toast.error('Game not found or no longer available.');
             router.push('/join');
             return;
           }
-          
+
           setGameData(data);
-          
+
           if (!data.isCreator && data.bets) {
             // Prefill existing answers for participants
             const existingAnswers: { [key: string]: string } = {};
@@ -126,7 +124,7 @@ export default function GamePage() {
     setAnswers((prev) => ({ ...prev, [betId]: value }));
   };
 
-    // Input validation functions
+  // Input validation functions
   // const handleWeightChange = (betId: string, value: string) => {
   //   // Allow numbers with comma or dot as thousands separator for grams
   //   const cleanValue = value.replace(/[^0-9,.]/, '');
@@ -150,9 +148,7 @@ export default function GamePage() {
       for (const betId in answers) {
         const answer = answers[betId];
         if (answer) {
-          const requestBody = user 
-            ? { answer, userId: user.id }
-            : { answer, username: username };
+          const requestBody = user ? { answer, userId: user.id } : { answer, username: username };
 
           await fetch(`/api/games/${gameId}/bets/${betId}`, {
             method: 'PATCH',
@@ -163,7 +159,7 @@ export default function GamePage() {
       }
 
       toast.success('Predictions saved successfully!');
-      
+
       // Redirect to overview page
       router.push(`/games/${gameId}/overview`);
     } catch (error) {
@@ -206,7 +202,7 @@ export default function GamePage() {
               <input
                 id="username"
                 type="text"
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="Enter your name..."
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -221,7 +217,7 @@ export default function GamePage() {
             <Button onClick={handleNameSubmit} className="w-full">
               Continue →
             </Button>
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-center text-xs text-gray-500">
               No account required! Your name will be used to identify your predictions.
             </p>
           </CardContent>
@@ -241,25 +237,25 @@ export default function GamePage() {
         <div className="w-full max-w-4xl space-y-6">
           <div className="text-center">
             <h1 className="text-3xl font-bold">You&apos;re the Game Creator!</h1>
-            <p className="text-gray-600">As the creator, you don&apos;t need to make predictions. You can view all participants&apos; predictions and manage the game results.</p>
+            <p className="text-gray-600">
+              As the creator, you don&apos;t need to make predictions. You can view all
+              participants&apos; predictions and manage the game results.
+            </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4">
-              <Button 
-                onClick={() => router.push(`/games/${gameId}/overview`)}
-                className="w-full"
-              >
+              <Button onClick={() => router.push(`/games/${gameId}/overview`)} className="w-full">
                 View All Predictions
               </Button>
-              <Button 
+              <Button
                 onClick={() => router.push(`/games/${gameId}/manage`)}
                 variant="outline"
                 className="w-full"
               >
                 Manage Game & Results
               </Button>
-              <Button 
+              <Button
                 onClick={() => router.push('/dashboard')}
                 variant="outline"
                 className="w-full"
@@ -267,20 +263,20 @@ export default function GamePage() {
                 Back to Dashboard
               </Button>
             </div>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Manage Questions</CardTitle>
               </CardHeader>
               <CardContent>
-                <Button 
+                <Button
                   onClick={() => router.push(`/games/${gameId}/questions`)}
                   variant="outline"
                   className="w-full"
                 >
                   ✏️ Edit Game Questions
                 </Button>
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="mt-2 text-sm text-gray-600">
                   Add, remove, or reorder questions for your game.
                 </p>
               </CardContent>
@@ -298,7 +294,7 @@ export default function GamePage() {
       <div className="w-full max-w-2xl space-y-6">
         {/* User identification banner */}
         {isAnonymous && username && (
-          <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200">
+          <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
             <CardContent className="py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -321,9 +317,9 @@ export default function GamePage() {
           </Card>
         )}
 
-<div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <h1 className="text-2xl font-bold">Make Your Predictions!</h1>
-          <div className="flex gap-2 w-full md:w-auto">
+          <div className="flex w-full gap-2 md:w-auto">
             <Button
               variant="outline"
               onClick={() => router.push(`/games/${gameId}/overview`)}
@@ -351,7 +347,7 @@ export default function GamePage() {
             <div className="space-y-4">
               {gameData.bets.map((bet) => {
                 const isLocked = gameData.publishedQuestions.includes(bet.question);
-                
+
                 return (
                   <QuestionInput
                     key={bet.id}
@@ -365,7 +361,7 @@ export default function GamePage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Button onClick={handleSaveAnswers} className="w-full">
           {hasExistingAnswers ? 'Update Predictions' : 'Save Predictions'}
         </Button>

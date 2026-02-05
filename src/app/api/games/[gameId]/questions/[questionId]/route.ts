@@ -13,10 +13,10 @@ export async function DELETE(
 
     // Verify the question exists and belongs to this game
     const question = await prisma.question.findFirst({
-      where: { 
-        id: questionId, 
+      where: {
+        id: questionId,
         gameId,
-        isDefault: false // Only allow deleting custom questions
+        isDefault: false, // Only allow deleting custom questions
       },
     });
 
@@ -26,7 +26,7 @@ export async function DELETE(
 
     // Delete the question
     await prisma.question.delete({
-      where: { id: questionId }
+      where: { id: questionId },
     });
 
     return NextResponse.json({ success: true });
@@ -51,10 +51,10 @@ export async function PUT(
 
     // Verify the question exists and belongs to this game
     const question = await prisma.question.findFirst({
-      where: { 
-        id: questionId, 
+      where: {
+        id: questionId,
         gameId,
-        isDefault: false // Only allow updating custom questions
+        isDefault: false, // Only allow updating custom questions
       },
     });
 
@@ -73,9 +73,9 @@ export async function PUT(
       },
       include: {
         creator: {
-          select: { id: true, email: true, name: true }
-        }
-      }
+          select: { id: true, email: true, name: true },
+        },
+      },
     });
 
     return NextResponse.json(updatedQuestion);

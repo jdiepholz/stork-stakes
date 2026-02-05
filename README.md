@@ -26,12 +26,14 @@ A fun web application for expecting parents to create prediction games where fri
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 
 ### Local Development
 
 1. **Clone and install:**
+
    ```bash
    git clone <repository-url>
    cd stork-stakes
@@ -39,16 +41,18 @@ A fun web application for expecting parents to create prediction games where fri
    ```
 
 2. **Set up the database:**
+
    ```bash
    npx prisma db push
    npx prisma generate
    ```
 
 3. **Start the development server:**
+
    ```bash
    npm run dev
    ```
-   
+
    Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ### 🎮 How to Use
@@ -84,7 +88,7 @@ A fun web application for expecting parents to create prediction games where fri
 **For non-technical friends to easily access:**
 
 1. **Deploy to a hosting platform:**
-   - **Vercel** (recommended): 
+   - **Vercel** (recommended):
      - Connect your GitHub repo to Vercel
      - Add PostgreSQL database (Vercel Postgres or Supabase)
      - Update `DATABASE_URL` in environment variables
@@ -99,6 +103,7 @@ A fun web application for expecting parents to create prediction games where fri
 **For testing with friends on the same network:**
 
 1. **Start your local server:**
+
    ```bash
    npm run dev
    ```
@@ -116,22 +121,27 @@ A fun web application for expecting parents to create prediction games where fri
 ## 🔧 Development & Customization
 
 ### Database Schema
+
 The app uses a simple but effective schema:
+
 - **Users:** id, email, password, name
 - **Games:** id, name, createdBy, publishedQuestions, actualResults
 - **Bets:** id, question, answer, gameId, userId
 
 ### Key Features
+
 - **Soft Deletes:** Games are marked as deleted, not permanently removed
 - **JSON Storage:** Published questions and actual results stored as JSON
 - **Foreign Key Constraints:** Maintains data integrity between users and games
 
 ### Adding Custom Questions
+
 Modify the default questions in `/src/app/games/new/page.tsx`:
+
 ```typescript
 const defaultBets = [
-  { question: 'Baby\'s Weight (in kg)', userId: user.id },
-  { question: 'Baby\'s Length (in cm)', userId: user.id },
+  { question: "Baby's Weight (in kg)", userId: user.id },
+  { question: "Baby's Length (in cm)", userId: user.id },
   { question: 'Birth Date', userId: user.id },
   // Add your custom questions here
 ];
@@ -140,6 +150,7 @@ const defaultBets = [
 ### Environment Setup for Production
 
 Create a `.env.local` file:
+
 ```bash
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/stork_stakes"
@@ -152,12 +163,15 @@ DATABASE_URL="postgresql://username:password@localhost:5432/stork_stakes"
 ## 📱 User Experience
 
 ### For Game Creators:
+
 1. Register → Create Game → Share Link → Manage Results → Publish Results
 
 ### For Participants:
+
 1. Click Link → Submit Predictions → View Published Results
 
 ### Mobile-Friendly Features:
+
 - Responsive design works on all screen sizes
 - Touch-friendly buttons and forms
 - Easy sharing via mobile messaging apps
@@ -175,12 +189,12 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/stork_stakes
     depends_on:
       - db
-  
+
   db:
     image: postgres:15
     environment:
@@ -215,6 +229,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 ## 🎉 Perfect for:
+
 - Baby showers and gender reveal parties
 - Family and friend gatherings
 - Remote celebration participation

@@ -9,7 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
   try {
     // First verify the game exists and is not soft-deleted
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null,
       },
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ gam
   try {
     // First verify the game exists and is not soft-deleted
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null,
       },

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
 
     // Get the game and verify the user is the creator (excluding soft-deleted)
     const game = await prisma.game.findFirst({
-      where: { 
+      where: {
         id: gameId,
         deletedAt: null, // Only non-deleted games
       },
@@ -35,7 +35,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
     }
 
     if (game.createdBy !== userId) {
-      return NextResponse.json({ error: 'Only the game creator can manage this game' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Only the game creator can manage this game' },
+        { status: 403 }
+      );
     }
 
     // Get all questions for this game (ordered)
@@ -63,55 +66,62 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ game
 
     // Group bets by user (excluding the game creator)
     const participantMap = new Map();
-    
-    bets.forEach((bet: { 
-      userId: string | null; 
-      username: string | null; 
-      question: string; 
-      answer: string | null; 
-      user: { email: string; name: string | null; id: string } | null 
-    }) => {
-      // Skip bets from the game creator (only registered users can be creators)
-      if (bet.userId === game.createdBy) {
-        return;
-      }
-      
-      // Create a unique key for each participant
-      const participantKey = bet.userId || `anonymous_${bet.username}`;
-      
-      if (!participantMap.has(participantKey)) {
-        participantMap.set(participantKey, {
-          userId: bet.userId || participantKey,
-          userEmail: bet.user?.email || bet.username || 'Anonymous',
-          userName: bet.user?.name || bet.username,
-          predictions: [],
+
+    bets.forEach(
+      (bet: {
+        userId: string | null;
+        username: string | null;
+        question: string;
+        answer: string | null;
+        user: { email: string; name: string | null; id: string } | null;
+      }) => {
+        // Skip bets from the game creator (only registered users can be creators)
+        if (bet.userId === game.createdBy) {
+          return;
+        }
+
+        // Create a unique key for each participant
+        const participantKey = bet.userId || `anonymous_${bet.username}`;
+
+        if (!participantMap.has(participantKey)) {
+          participantMap.set(participantKey, {
+            userId: bet.userId || participantKey,
+            userEmail: bet.user?.email || bet.username || 'Anonymous',
+            userName: bet.user?.name || bet.username,
+            predictions: [],
+          });
+        }
+
+        participantMap.get(participantKey).predictions.push({
+          question: bet.question,
+          answer: bet.answer,
         });
       }
-      
-      participantMap.get(participantKey).predictions.push({
-        question: bet.question,
-        answer: bet.answer,
-      });
-    });
+    );
 
     const participants = Array.from(participantMap.values());
 
-    const gameWithFields = game as { publishedQuestions: unknown; status: string; actualResults: unknown };
-    
+    const gameWithFields = game as {
+      publishedQuestions: unknown;
+      status: string;
+      actualResults: unknown;
+    };
+
     // Parse published questions
     let publishedQuestions: string[] = [];
     if (gameWithFields.publishedQuestions) {
       try {
-        publishedQuestions = typeof gameWithFields.publishedQuestions === 'string' 
-          ? JSON.parse(gameWithFields.publishedQuestions)
-          : gameWithFields.publishedQuestions;
+        publishedQuestions =
+          typeof gameWithFields.publishedQuestions === 'string'
+            ? JSON.parse(gameWithFields.publishedQuestions)
+            : gameWithFields.publishedQuestions;
       } catch {
-        publishedQuestions = Array.isArray(gameWithFields.publishedQuestions) 
-          ? gameWithFields.publishedQuestions 
+        publishedQuestions = Array.isArray(gameWithFields.publishedQuestions)
+          ? gameWithFields.publishedQuestions
           : [];
       }
     }
-    
+
     const gameData = {
       id: game.id,
       name: game.name,
