@@ -94,12 +94,12 @@ export default function Home() {
             <CardContent>
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label className="text-sm">Birth Weight (lbs)</Label>
-                  <Input placeholder="7.5" disabled className="bg-muted/50" />
+                  <Label className="text-sm">Birth Weight (g)</Label>
+                  <Input placeholder="3400" disabled className="bg-muted/50" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">Birth Length (inches)</Label>
-                  <Input placeholder="20" disabled className="bg-muted/50" />
+                  <Label className="text-sm">Birth Length (cm)</Label>
+                  <Input placeholder="50" disabled className="bg-muted/50" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm">Birth Date</Label>
