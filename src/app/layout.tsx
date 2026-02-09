@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Stork Stakes',
+  title: 'Stork Bets',
   description: 'A fun baby guessing game for parents-to-be and friends.',
   icons: {
     icon: '/favicon.ico',

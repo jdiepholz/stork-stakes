@@ -1,4 +1,4 @@
-# Stork Stakes - Baby Prediction Game
+# Stork Bets - Baby Prediction Game
 
 A fun web application for expecting parents to create prediction games where friends and family can guess baby details like weight, length, and birth date. Perfect for baby showers and building excitement before the big day!
 
@@ -36,7 +36,7 @@ A fun web application for expecting parents to create prediction games where fri
 
    ```bash
    git clone <repository-url>
-   cd stork-stakes
+   cd stork-bets
    npm install
    ```
 
@@ -76,7 +76,7 @@ A fun web application for expecting parents to create prediction games where fri
 2. **Provide setup instructions:**
    ```bash
    git clone <repository-url>
-   cd stork-stakes
+   cd stork-bets
    npm install
    npx prisma db push
    npm run dev

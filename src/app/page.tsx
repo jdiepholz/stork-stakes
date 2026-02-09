@@ -20,7 +20,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-4xl flex-col items-center space-y-8 text-center">
           <div className="space-y-4">
             <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-5xl font-bold tracking-tight text-transparent md:text-7xl">
-              Stork Stakes
+              Stork Bets
             </h1>
             <p className="text-foreground text-2xl font-semibold md:text-3xl">
               Baby Prediction Games Made Easy
@@ -307,7 +307,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t py-8">
         <div className="text-muted-foreground container mx-auto px-4 text-center">
-          <p>© 2026 Stork Stakes. Made with 💚 for expecting families.</p>
+          <p>© 2026 Stork Bets. Made with 💚 for expecting families.</p>
         </div>
       </footer>
     </div>

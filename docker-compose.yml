@@ -4,7 +4,7 @@ services:
     image: postgres:18
     restart: always
     environment:
-      POSTGRES_DB: stork-stakes
+      POSTGRES_DB: stork-bets
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -25,7 +25,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/stork-stakes'
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/stork-bets'
 
 volumes:
   postgres_data:
