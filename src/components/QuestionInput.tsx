@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { calculateScrabbleScore } from '@/lib/scoring';
 
 interface BetWithQuestionInfo {
   id: string;
@@ -155,6 +156,26 @@ export default function QuestionInput({ bet, value, onChange, isLocked }: Questi
               disabled={isLocked}
               className={`border-input h-10 w-16 cursor-pointer rounded-md border p-1 ${baseClassName}`}
             />
+          </div>
+        );
+
+      case 'SCRABBLE':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={bet.id}
+              value={value}
+              onChange={(e) => onChange(bet.id, e.target.value)}
+              placeholder={getPlaceholder()}
+              disabled={isLocked}
+              className={`flex-1 ${baseClassName}`}
+            />
+            <div 
+              className="flex h-10 min-w-[3rem] items-center justify-center rounded-md border bg-gray-50 px-2 text-sm font-semibold text-gray-600"
+              title="Scrabble Score"
+            >
+              {calculateScrabbleScore(value)}
+            </div>
           </div>
         );
 

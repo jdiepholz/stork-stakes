@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { calculateScrabbleScore } from '@/lib/scoring';
 
 interface Question {
   id: string;
@@ -90,6 +91,24 @@ export default function DynamicResultInput({
               onChange={(e) => onChange(text, e.target.value, type)}
               className="h-10 w-16 cursor-pointer rounded-md border border-gray-300 p-1"
             />
+          </div>
+        );
+
+      case 'SCRABBLE':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={`result-${text}`}
+              value={value}
+              onChange={(e) => onChange(text, e.target.value, type)}
+              placeholder={placeholder || ''}
+            />
+            <div 
+              className="flex h-10 min-w-[3rem] items-center justify-center rounded-md border bg-gray-50 px-2 text-sm font-semibold text-gray-600"
+              title="Scrabble Score"
+            >
+              {calculateScrabbleScore(value)}
+            </div>
           </div>
         );
 

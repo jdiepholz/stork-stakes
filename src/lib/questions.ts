@@ -57,9 +57,9 @@ export const defaultQuestions = [
     options: null,
   },
   {
-    text: 'The Scrabble value of the first name?',
-    type: 'NUMBER',
-    placeholder: 'e.g., 25',
+    text: 'First Name (Scrabble value)',
+    type: 'SCRABBLE',
+    placeholder: 'e.g., John',
     options: null,
   },
   {

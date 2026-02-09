@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { calculateParticipantScores, getLeaderboard } from '@/lib/scoring';
+import { calculateParticipantScores, getLeaderboard, calculateScrabbleScore } from '@/lib/scoring';
 
 interface GameOverview {
   id: string;
@@ -276,7 +276,21 @@ export default function GameOverviewPage() {
                           return (
                             <td key={qIndex} className="p-4">
                               {canSeeThisQuestion ? (
-                                prediction?.answer || (
+                                prediction?.answer ? (
+                                  question.type === 'SCRABBLE' ? (
+                                    <div className="flex items-center gap-2">
+                                      <span>{prediction.answer}</span>
+                                      <span
+                                        className="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600"
+                                        title="Scrabble Score"
+                                      >
+                                        {calculateScrabbleScore(prediction.answer)}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    prediction.answer
+                                  )
+                                ) : (
                                   <span className="text-gray-400 italic">No prediction</span>
                                 )
                               ) : (
@@ -303,7 +317,23 @@ export default function GameOverviewPage() {
                           return (
                             <td key={qIndex} className="p-4">
                               {isPublished ? (
-                                actualValue || '-'
+                                actualValue ? (
+                                  question.type === 'SCRABBLE' ? (
+                                    <div className="flex items-center gap-2">
+                                      <span>{actualValue}</span>
+                                      <span
+                                        className="rounded-md bg-yellow-200 px-2 py-0.5 text-xs font-semibold text-yellow-800"
+                                        title="Scrabble Score"
+                                      >
+                                        {calculateScrabbleScore(actualValue)}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    actualValue
+                                  )
+                                ) : (
+                                  '-'
+                                )
                               ) : (
                                 <span className="text-gray-400 italic">Not published</span>
                               )}

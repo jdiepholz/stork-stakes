@@ -206,6 +206,13 @@ function calculateQuestionScore(
         return { value: 0, isNumerical: false };
       }
 
+    case 'SCRABBLE':
+      const predictedScore = calculateScrabbleScore(predicted);
+      const actualScore = calculateScrabbleScore(actual);
+      
+      const diff = Math.abs(actualScore - predictedScore);
+      return { value: diff, isNumerical: true };
+
     case 'SELECT':
       // Exact match scoring for SELECT questions
       return {
@@ -269,6 +276,24 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const b = parseInt(hex.substring(4, 6), 16);
 
   return { r, g, b };
+}
+
+export function calculateScrabbleScore(word: string): number {
+  if (!word) return 0;
+  
+  const values: { [key: string]: number } = {
+    a: 1, e: 1, i: 1, o: 1, u: 1, l: 1, n: 1, s: 1, t: 1, r: 1,
+    d: 2, g: 2,
+    b: 3, c: 3, m: 3, p: 3,
+    f: 4, h: 4, v: 4, w: 4, y: 4,
+    k: 5,
+    j: 8, x: 8,
+    q: 10, z: 10
+  };
+  
+  return word.toLowerCase().split('').reduce((score, char) => {
+    return score + (values[char] || 0);
+  }, 0);
 }
 
 export function getLeaderboard(participantScores: ParticipantScore[]): ParticipantScore[] {
