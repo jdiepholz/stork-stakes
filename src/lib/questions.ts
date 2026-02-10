@@ -44,18 +44,7 @@ export const defaultQuestions = [
     placeholder: null,
     options: ['Boy', 'Girl', 'Diverse'],
   },
-  {
-    text: 'How many diapers in the first week?',
-    type: 'NUMBER',
-    placeholder: 'e.g., 70',
-    options: null,
-  },
-  {
-    text: 'How many photos in the first 24h?',
-    type: 'NUMBER',
-    placeholder: 'e.g., 150',
-    options: null,
-  },
+
   {
     text: 'First Name (Scrabble value)',
     type: 'SCRABBLE',
@@ -68,12 +57,7 @@ export const defaultQuestions = [
     placeholder: 'e.g., 2',
     options: null,
   },
-  {
-    text: 'Hair color?',
-    type: 'COLORPICKER',
-    placeholder: null,
-    options: null,
-  },
+
   {
     text: 'Time of birth',
     type: 'TIME',

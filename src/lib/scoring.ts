@@ -128,11 +128,8 @@ function getActualValueForQuestion(question: string, actualResults: ActualResult
   if (question.includes('Length') && actualResults.length) return actualResults.length;
   if (question.includes('Birth Date') && actualResults.birthDate) return actualResults.birthDate;
   if (question.includes('Sex of the Baby') && actualResults.sex) return actualResults.sex;
-  if (question.includes('diapers') && actualResults.diapers) return actualResults.diapers;
-  if (question.includes('photos') && actualResults.photos) return actualResults.photos;
   if (question.includes('Scrabble') && actualResults.scrabbleValue) return actualResults.scrabbleValue;
   if (question.includes('How many names') && actualResults.nameCount) return actualResults.nameCount;
-  if (question.includes('Hair color') && actualResults.hairColor) return actualResults.hairColor;
   if (question.includes('Time of birth') && actualResults.timeOfBirth) return actualResults.timeOfBirth;
   
   return null;
