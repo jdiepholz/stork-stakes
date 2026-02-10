@@ -37,6 +37,8 @@ interface Question {
   isCustom?: boolean;
 }
 
+const DEFAULT_EXISTING_QUESTIONS: Question[] = [];
+
 interface GameQuestionsSetupProps {
   gameId: string;
   userId: string;
@@ -52,7 +54,7 @@ export default function GameQuestionsSetup({
   onComplete,
   onBack,
   mode = 'create',
-  existingQuestions = [],
+  existingQuestions = DEFAULT_EXISTING_QUESTIONS,
 }: GameQuestionsSetupProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
