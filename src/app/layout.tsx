@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { AuthButton } from '@/components/auth-button';
 import { AuthProvider } from '@/components/auth-provider';
+import { Footer } from '@/components/footer';
 import './globals.css';
 
 const geistSans = Geist({
@@ -38,6 +39,7 @@ export default function RootLayout({
             <AuthButton />
             <ThemeToggle />
             {children}
+            <Footer />
             <Toaster position="top-right" richColors />
           </AuthProvider>
         </ThemeProvider>

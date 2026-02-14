@@ -303,13 +303,6 @@ export default function Home() {
           </CardContent>
         </Card>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="text-muted-foreground container mx-auto px-4 text-center">
-          <p>© 2026 Stork Bets. Made with 💚 for expecting families.</p>
-        </div>
-      </footer>
     </div>
   );
 }
