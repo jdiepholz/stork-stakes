@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,6 +40,7 @@ export default function GameOverviewPage() {
   const router = useRouter();
   const gameId = params.gameId as string;
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [gameData, setGameData] = useState<GameOverview | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +56,10 @@ export default function GameOverviewPage() {
     } else {
       // Anonymous user can still view overview
       setIsAnonymous(true);
+      const savedUsername = localStorage.getItem(`game_${gameId}_username`);
+      if (savedUsername) {
+        setUsername(savedUsername);
+      }
     }
   }, [gameId]);
 
@@ -114,6 +119,33 @@ export default function GameOverviewPage() {
   if (!gameData || gameData.error) {
     return null;
   }
+
+  const sortedParticipants = useMemo(() => {
+    return [...gameData.participants].sort((a, b) => {
+      const isUserA =
+        (user &&
+          (a.userId === user.id ||
+            (user.email &&
+              a.userEmail &&
+              a.userEmail.toLowerCase() === user.email.toLowerCase()))) ||
+        (username && (a.userName === username || a.userId === `anonymous_${username}`));
+
+      const isUserB =
+        (user &&
+          (b.userId === user.id ||
+            (user.email &&
+              b.userEmail &&
+              b.userEmail.toLowerCase() === user.email.toLowerCase()))) ||
+        (username && (b.userName === username || b.userId === `anonymous_${username}`));
+
+      if (isUserA && !isUserB) return -1;
+      if (!isUserA && isUserB) return 1;
+
+      const nameA = a.userName || a.userEmail || '';
+      const nameB = b.userName || b.userEmail || '';
+      return nameA.localeCompare(nameB);
+    });
+  }, [gameData.participants, user, username]);
 
   const isCreator = user && user.id === gameData.createdBy;
   const resultsPublished = gameData.status === 'RESULTS_PUBLISHED';
@@ -229,18 +261,7 @@ export default function GameOverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {!canSeeResults ? (
-              <div className="py-8 text-center">
-                <p className="text-gray-500">
-                  The game creator hasn&apos;t published any results yet. You&apos;ll be able to see
-                  predictions and results once they&apos;re published.
-                </p>
-                <p className="mt-2 text-sm text-gray-400">
-                  You can still view and edit your own predictions.
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
+            <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="border-b">
@@ -260,47 +281,64 @@ export default function GameOverviewPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {gameData.participants.map((participant) => (
-                      <tr key={participant.userId} className="border-b">
-                        <td className="p-4 font-medium">
-                          {participant.userName || participant.userEmail}
-                          {user && participant.userId === user.id && ' (You)'}
-                        </td>
-                        {gameData.questions.map((question, qIndex) => {
-                          const prediction = participant.predictions.find(
-                            (p) => p.question === question.text
-                          );
-                          const isPublished = gameData.publishedQuestions.includes(question.text);
-                          const canSeeThisQuestion = isCreator || isPublished;
+                    {gameData.participants.map((participant) => {
+                      const isCurrentUser =
+                        (user &&
+                          (participant.userId === user.id ||
+                            (user.email &&
+                              participant.userEmail &&
+                              participant.userEmail.toLowerCase() ===
+                                user.email.toLowerCase()))) ||
+                        (username &&
+                          (participant.userName === username ||
+                            participant.userId === `anonymous_${username}`));
 
-                          return (
-                            <td key={qIndex} className="p-4">
-                              {canSeeThisQuestion ? (
-                                prediction?.answer ? (
-                                  question.type === 'SCRABBLE' ? (
-                                    <div className="flex items-center gap-2">
-                                      <span>{prediction.answer}</span>
-                                      <span
-                                        className="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600"
-                                        title="Scrabble Score"
-                                      >
-                                        {calculateScrabbleScore(prediction.answer)}
-                                      </span>
-                                    </div>
+                      return (
+                        <tr
+                          key={participant.userId}
+                          className={`border-b ${isCurrentUser ? 'bg-blue-50 dark:bg-blue-950/50' : ''}`}
+                        >
+                          <td className="p-4 font-medium">
+                            {participant.userName || participant.userEmail}
+                            {isCurrentUser && ' (You)'}
+                          </td>
+                          {gameData.questions.map((question, qIndex) => {
+                            const prediction = participant.predictions.find(
+                              (p) => p.question === question.text
+                            );
+                            const isPublished = gameData.publishedQuestions.includes(question.text);
+                            const isOwnPrediction = isCurrentUser;
+                            const canSeeValue = isCreator || isPublished || isOwnPrediction;
+
+                            return (
+                              <td key={qIndex} className="p-4">
+                                {prediction?.answer ? (
+                                  canSeeValue ? (
+                                    question.type === 'SCRABBLE' ? (
+                                      <div className="flex items-center gap-2">
+                                        <span>{prediction.answer}</span>
+                                        <span
+                                          className="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600"
+                                          title="Scrabble Score"
+                                        >
+                                          {calculateScrabbleScore(prediction.answer)}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      prediction.answer
+                                    )
                                   ) : (
-                                    prediction.answer
+                                    <span className="text-gray-400 italic">Hidden</span>
                                   )
                                 ) : (
                                   <span className="text-gray-400 italic">No prediction</span>
-                                )
-                              ) : (
-                                <span className="text-gray-400 italic">Hidden</span>
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
                     {/* Actual Results Row - only show published questions */}
                     {gameData.actualResults && hasPublishedQuestions && (
                       <tr className="border-b bg-yellow-50 font-semibold">
@@ -345,7 +383,6 @@ export default function GameOverviewPage() {
                   </tbody>
                 </table>
               </div>
-            )}
           </CardContent>
         </Card>
 

@@ -24,6 +24,7 @@ import {
 import { toast } from 'sonner';
 // import { defaultQuestions } from '@/lib/questions'; // Unused
 import GameQuestionsSetup from '@/components/GameQuestionsSetup';
+import { SupportCallout } from '@/components/support-callout';
 
 export default function NewGamePage() {
   const [step, setStep] = useState<'name' | 'questions' | 'created'>('name');
@@ -198,6 +199,8 @@ export default function NewGamePage() {
                 </Button>
               </div>
             </div>
+            
+            <SupportCallout />
           </div>
           <DialogFooter>
             <Button

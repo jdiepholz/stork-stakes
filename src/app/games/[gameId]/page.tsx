@@ -4,8 +4,17 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import QuestionInput from '@/components/QuestionInput';
+import { SupportCallout } from '@/components/support-callout';
 
 interface BetWithQuestionInfo {
   id: string;
@@ -35,6 +44,7 @@ export default function GamePage() {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
+  const [showSupportDialog, setShowSupportDialog] = useState(false);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -160,8 +170,8 @@ export default function GamePage() {
 
       toast.success('Predictions saved successfully!');
 
-      // Redirect to overview page
-      router.push(`/games/${gameId}/overview`);
+      // Show support dialog instead of immediate redirect
+      setShowSupportDialog(true);
     } catch (error) {
       console.error('Error saving predictions:', error);
       toast.error('Failed to save predictions.');
@@ -366,6 +376,27 @@ export default function GamePage() {
           {hasExistingAnswers ? 'Update Predictions' : 'Save Predictions'}
         </Button>
       </div>
+
+      <Dialog open={showSupportDialog} onOpenChange={setShowSupportDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>🎉 Predictions Saved!</DialogTitle>
+            <DialogDescription>
+              Your bets have been placed. Good luck!
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <SupportCallout />
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => router.push(`/games/${gameId}/overview`)}>
+              Continue to Overview
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
