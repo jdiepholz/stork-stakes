@@ -5,12 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/components/auth-provider';
 
 export default function Home() {
   const router = useRouter();
-
+  const { isLoggedIn } = useAuth();
+  
   const handleGetStarted = () => {
-    router.push('/join');
+    if (isLoggedIn) {
+      router.push('/dashboard');
+    } else {
+      router.push('/join');
+    }
   };
 
   return (
