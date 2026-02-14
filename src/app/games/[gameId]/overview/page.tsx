@@ -102,25 +102,9 @@ export default function GameOverviewPage() {
     }
   }, [gameId, user, router]);
 
-  const copyGameLink = () => {
-    const link = `${window.location.origin}/games/${gameId}`;
-    navigator.clipboard.writeText(link);
-    toast.success('Game link copied to clipboard!');
-  };
-
-  if (loading) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
-        <div>Loading...</div>
-      </main>
-    );
-  }
-
-  if (!gameData || gameData.error) {
-    return null;
-  }
-
   const sortedParticipants = useMemo(() => {
+    if (!gameData || !gameData.participants) return [];
+
     return [...gameData.participants].sort((a, b) => {
       const isUserA =
         (user &&
@@ -145,7 +129,25 @@ export default function GameOverviewPage() {
       const nameB = b.userName || b.userEmail || '';
       return nameA.localeCompare(nameB);
     });
-  }, [gameData.participants, user, username]);
+  }, [gameData, user, username]);
+
+  const copyGameLink = () => {
+    const link = `${window.location.origin}/games/${gameId}`;
+    navigator.clipboard.writeText(link);
+    toast.success('Game link copied to clipboard!');
+  };
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24">
+        <div>Loading...</div>
+      </main>
+    );
+  }
+
+  if (!gameData || gameData.error) {
+    return null;
+  }
 
   const isCreator = user && user.id === gameData.createdBy;
   const resultsPublished = gameData.status === 'RESULTS_PUBLISHED';
@@ -281,7 +283,7 @@ export default function GameOverviewPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {gameData.participants.map((participant) => {
+                    {sortedParticipants.map((participant) => {
                       const isCurrentUser =
                         (user &&
                           (participant.userId === user.id ||
