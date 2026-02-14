@@ -18,7 +18,7 @@ export function SupportCallout() {
             variant="outline"
             size="sm"
             className="border-amber-200 bg-white text-amber-900 hover:bg-amber-50 hover:text-amber-950 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-200 dark:hover:bg-amber-900/50"
-            onClick={() => window.open('https://www.buymeacoffee.com/', '_blank')}
+            onClick={() => window.open('https://buymeacoffee.com/jdiepholz', '_blank')}
           >
             ☕ Buy me a coffee
           </Button>
